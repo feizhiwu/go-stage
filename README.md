@@ -147,6 +147,90 @@ func (s *UserController) delete() {
 	display.Show(common.StatusOk)
 }
 ```
+## SERVICE 示例
+```
+package service
+
+import (
+	"encoding/json"
+	"toutGin/app/common"
+	"toutGin/app/dao"
+	"toutGin/app/model"
+)
+
+type UserService struct {
+}
+
+func (s *UserService) Add(data map[string]interface{}) uint {
+	userDao := new(dao.UserDao)
+	params := common.CopyParams([]string{"name", "password"}, data)
+	json.Unmarshal(common.MakeJson(params), &userDao.User)
+	return userDao.Add()
+}
+
+func (s *UserService) GetInfo(id uint) model.User {
+	userDao := new(dao.UserDao)
+	userDao.User.Id = id
+	return userDao.GetOne()
+}
+
+func (s *UserService) Update(data map[string]interface{}) {
+	userDao := new(dao.UserDao)
+	params := common.CopyParams([]string{"id", "name", "password"}, data)
+	userDao.Update(params)
+}
+
+func (s *UserService) Delete(id uint) {
+	userDao := new(dao.UserDao)
+	userDao.User.Id = id
+	userDao.Delete()
+}
+
+func (s *UserService) GetList(data map[string]interface{}) interface{} {
+	userDao := new(dao.UserDao)
+	return userDao.GetAll(data)
+}
+```
+## DAO 示例
+```
+package dao
+
+import (
+	"toutGin/app/common"
+	"toutGin/app/model"
+)
+
+type UserDao struct {
+	User model.User
+}
+
+func (d *UserDao) Add() uint {
+	table := common.DB.Table("user")
+	table.Create(&d.User)
+	table.Last(&d.User)
+	return d.User.Id
+}
+
+func (d *UserDao) Update(data map[string]interface{}) {
+	common.DB.Table("user").Where("id  = ?", data["id"]).Updates(data)
+}
+
+func (d *UserDao) GetOne() model.User {
+	common.DB.Table("user").Where("id  = ?", d.User.Id).First(&d.User)
+	return d.User
+}
+
+func (d *UserDao) Delete() {
+	common.DB.Table("user").Delete(&d.User)
+}
+
+func (d *UserDao) GetAll(data map[string]interface{}) []model.User {
+	var users []model.User
+	limit := 20
+	common.DB.Table("user").Limit(limit).Offset(common.GetOffset(data["page"], limit)).Find(&users)
+	return users
+}
+```
 ## 接口统一返回
 ```
 package common
