@@ -8,6 +8,8 @@
     |-common 公共方法
         |-display.go 统一json格式输出
     |-config 配置文件和统一路由管理
+        |-message.yml 状态码配置文件
+        |-route.go 路由配置文件
     |-controller 控制器
     |-dao 负责curd的
     |-middleware 中间件
