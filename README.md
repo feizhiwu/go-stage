@@ -29,6 +29,14 @@ PUT http://localhost:8080/v1/user
 DELETE http://localhost:8080/v1/user
 # api 只接收 Content-Type: application/json 的传参，包括GET请求方式
 ```
+## JSON RESULT
+```
+{
+    "status": 10000,
+    "msg": "请求成功",
+    "body": null
+}
+```
 ## ROUTE 示例
 ```
 package config
@@ -187,14 +195,6 @@ func (d *Display) Show(mix interface{}) {
 	}
 	d.Context.JSON(http.StatusOK, d.Body)
 	d.Context.Abort()
-}
-```
-## API JSON RESULT 示例
-```
-{
-    "status": 10000,
-    "msg": "请求成功",
-    "body": null
 }
 ```
 ## 测试user表结构
