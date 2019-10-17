@@ -10,6 +10,7 @@ type UserController struct {
 	data map[string]interface{}
 }
 
+//控制器入口
 func (s *UserController) Run(c *gin.Context) {
 	display = &common.Display{Context: c}
 	data = common.GetData(c)
