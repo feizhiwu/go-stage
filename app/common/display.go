@@ -3,6 +3,7 @@ package common
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"toutGin/app/config"
 )
 
 const (
@@ -23,7 +24,7 @@ type Display struct {
 
 //统一输出api数据
 func (d *Display) Show(mix interface{}) {
-	message := new(Message)
+	message := new(config.Message)
 	if d.Body.Status == StatusInit {
 		d.Body.Status = StatusOk
 	}

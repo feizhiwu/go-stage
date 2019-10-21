@@ -8,34 +8,36 @@ import (
 )
 
 type UserService struct {
+	UD *dao.UserDao
 }
 
 func (s *UserService) Add(data map[string]interface{}) uint {
-	userDao := new(dao.UserDao)
+	s.UD = new(dao.UserDao)
 	params := common.CopyParams([]string{"name", "password"}, data)
-	json.Unmarshal(common.MakeJson(params), &userDao.User)
-	return userDao.Add()
+	json.Unmarshal(common.MakeJson(params), &s.UD.User)
+	return s.UD.Add()
 }
 
 func (s *UserService) GetInfo(id uint) model.User {
-	userDao := new(dao.UserDao)
-	userDao.User.Id = id
-	return userDao.GetOne()
+	s.UD = new(dao.UserDao)
+	s.UD.User.Id = id
+	return s.UD.User
 }
 
 func (s *UserService) Update(data map[string]interface{}) {
-	userDao := new(dao.UserDao)
+	s.UD = new(dao.UserDao)
 	params := common.CopyParams([]string{"id", "name", "password"}, data)
-	userDao.Update(params)
+	s.UD.Update(params)
 }
 
 func (s *UserService) Delete(id uint) {
-	userDao := new(dao.UserDao)
-	userDao.User.Id = id
-	userDao.Delete()
+	s.UD = new(dao.UserDao)
+	s.UD.User.Id = id
+	s.UD.Delete()
 }
 
-func (s *UserService) GetList(data map[string]interface{}) interface{} {
-	userDao := new(dao.UserDao)
-	return userDao.GetAll(data)
+func (s *UserService) GetList(data map[string]interface{}) []model.User {
+	s.UD = new(dao.UserDao)
+	s.UD.GetAll(data)
+	return s.UD.UserList
 }
