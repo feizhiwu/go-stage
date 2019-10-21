@@ -15,7 +15,8 @@ func (s *UserService) Add(data map[string]interface{}) uint {
 	s.UD = new(dao.UserDao)
 	params := common.CopyParams([]string{"name", "password"}, data)
 	json.Unmarshal(common.MakeJson(params), &s.UD.User)
-	return s.UD.Add()
+	s.UD.Add()
+	return s.UD.User.Id
 }
 
 func (s *UserService) GetInfo(id uint) model.User {

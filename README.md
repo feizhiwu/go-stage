@@ -161,36 +161,39 @@ import (
 )
 
 type UserService struct {
+	UD *dao.UserDao
 }
 
 func (s *UserService) Add(data map[string]interface{}) uint {
-	userDao := new(dao.UserDao)
+	s.UD = new(dao.UserDao)
 	params := common.CopyParams([]string{"name", "password"}, data)
-	json.Unmarshal(common.MakeJson(params), &userDao.User)
-	return userDao.Add()
+	json.Unmarshal(common.MakeJson(params), &s.UD.User)
+	s.UD.Add()
+	return s.UD.User.Id
 }
 
 func (s *UserService) GetInfo(id uint) model.User {
-	userDao := new(dao.UserDao)
-	userDao.User.Id = id
-	return userDao.GetOne()
+	s.UD = new(dao.UserDao)
+	s.UD.User.Id = id
+	return s.UD.User
 }
 
 func (s *UserService) Update(data map[string]interface{}) {
-	userDao := new(dao.UserDao)
+	s.UD = new(dao.UserDao)
 	params := common.CopyParams([]string{"id", "name", "password"}, data)
-	userDao.Update(params)
+	s.UD.Update(params)
 }
 
 func (s *UserService) Delete(id uint) {
-	userDao := new(dao.UserDao)
-	userDao.User.Id = id
-	userDao.Delete()
+	s.UD = new(dao.UserDao)
+	s.UD.User.Id = id
+	s.UD.Delete()
 }
 
-func (s *UserService) GetList(data map[string]interface{}) interface{} {
-	userDao := new(dao.UserDao)
-	return userDao.GetAll(data)
+func (s *UserService) GetList(data map[string]interface{}) []model.User {
+	s.UD = new(dao.UserDao)
+	s.UD.GetAll(data)
+	return s.UD.UserList
 }
 ```
 ## DAO 示例
@@ -199,38 +202,36 @@ package dao
 
 import (
 	"toutGin/app/common"
+	"toutGin/app/config"
 	"toutGin/app/model"
 )
 
 type UserDao struct {
-	User model.User
+	User     model.User
+	UserList []model.User
 }
 
-func (d *UserDao) Add() uint {
-	table := common.DB.Table("user")
+func (d *UserDao) Add() {
+	table := config.DB.Table("user")
 	table.Create(&d.User)
 	table.Last(&d.User)
-	return d.User.Id
 }
 
 func (d *UserDao) Update(data map[string]interface{}) {
-	common.DB.Table("user").Where("id  = ?", data["id"]).Updates(data)
+	config.DB.Table("user").Where("id  = ?", data["id"]).Updates(data)
 }
 
-func (d *UserDao) GetOne() model.User {
-	common.DB.Table("user").Where("id  = ?", d.User.Id).First(&d.User)
-	return d.User
+func (d *UserDao) GetOne() {
+	config.DB.Table("user").Where("id  = ?", d.User.Id).First(&d.User)
 }
 
 func (d *UserDao) Delete() {
-	common.DB.Table("user").Delete(&d.User)
+	config.DB.Table("user").Delete(&d.User)
 }
 
-func (d *UserDao) GetAll(data map[string]interface{}) []model.User {
-	var users []model.User
+func (d *UserDao) GetAll(data map[string]interface{}) {
 	limit := 20
-	common.DB.Table("user").Limit(limit).Offset(common.GetOffset(data["page"], limit)).Find(&users)
-	return users
+	config.DB.Table("user").Limit(limit).Offset(common.GetOffset(data["page"], limit)).Find(&d.UserList)
 }
 ```
 ## 接口统一返回

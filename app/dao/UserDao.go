@@ -11,11 +11,10 @@ type UserDao struct {
 	UserList []model.User
 }
 
-func (d *UserDao) Add() uint {
+func (d *UserDao) Add() {
 	table := config.DB.Table("user")
 	table.Create(&d.User)
 	table.Last(&d.User)
-	return d.User.Id
 }
 
 func (d *UserDao) Update(data map[string]interface{}) {
