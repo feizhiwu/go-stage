@@ -7,6 +7,7 @@
 |-app
     |-common 公共方法
         |-display.go 统一json格式输出
+        |-function.go 公共函数
     |-controller 控制器
     |-dao 负责curd的
     |-middleware 中间件
