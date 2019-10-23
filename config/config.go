@@ -15,7 +15,7 @@ var DB *gorm.DB
 
 func GetValue(key string) interface{} {
 	dir, _ := os.Getwd()
-	filePath := path.Join(dir, "/app/config/config.yml")
+	filePath := path.Join(dir, "/config/config.yml")
 	fileData, _ := ioutil.ReadFile(filePath)
 	var config map[string]interface{}
 	yaml.Unmarshal(fileData, &config)
@@ -45,7 +45,7 @@ func (d *Database) GetConnect() {
 //获取数据库配置
 func (d *Database) GetInfo() DBInfo {
 	dir, _ := os.Getwd()
-	filePath := path.Join(dir, "/app/config/database.yml")
+	filePath := path.Join(dir, "/config/database.yml")
 	fileData, _ := ioutil.ReadFile(filePath)
 	yaml.Unmarshal(fileData, &d)
 	if gin.Mode() == gin.DebugMode {
@@ -64,7 +64,7 @@ type Message struct {
 //根据status返回文字说明
 func (m *Message) GetMessage(status int) string {
 	dir, _ := os.Getwd()
-	filePath := path.Join(dir, "/app/config/message.yml")
+	filePath := path.Join(dir, "/config/message.yml")
 	fileData, _ := ioutil.ReadFile(filePath)
 	yaml.Unmarshal(fileData, &m)
 	var message map[int]string

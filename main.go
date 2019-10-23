@@ -2,8 +2,8 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"toutGin/app/config"
-	"toutGin/app/config/route"
+	"toutGin/config"
+	"toutGin/config/route"
 )
 
 func main() {

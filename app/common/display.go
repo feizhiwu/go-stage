@@ -3,7 +3,7 @@ package common
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"toutGin/app/config"
+	"toutGin/config"
 )
 
 const (

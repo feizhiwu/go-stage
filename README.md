@@ -7,16 +7,16 @@
 |-app
     |-common 公共方法
         |-display.go 统一json格式输出
-    |-config 配置文件和统一路由管理
-        |-route
-            |-route.go 路由配置文件
-        |-message.yml 状态码配置文件
-        |-config.go 配置方法
     |-controller 控制器
     |-dao 负责curd的
     |-middleware 中间件
     |-model 模型
     |-service 核心业务处理
+|-config 配置文件和统一路由管理
+    |-route
+        |-route.go 路由配置文件
+    |-message.yml 状态码配置文件
+    |-config.go 配置方法
 |-main.go 程序执行入口
 ```
 ## 模块调用流程

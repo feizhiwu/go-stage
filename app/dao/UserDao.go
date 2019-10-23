@@ -2,8 +2,8 @@ package dao
 
 import (
 	"toutGin/app/common"
-	"toutGin/app/config"
 	"toutGin/app/model"
+	"toutGin/config"
 )
 
 type UserDao struct {
