@@ -32,7 +32,7 @@ GET http://localhost:8080/v1/user
 POST http://localhost:8080/v1/user
 PUT http://localhost:8080/v1/user
 DELETE http://localhost:8080/v1/user
-# api 只接收 Content-Type: application/json 的传参，包括GET请求方式
+# api POST，PUT，DELETE 推荐使用 body json 传参，GET兼容 body 和 url 传参
 ```
 ## JSON RESULT
 ```
