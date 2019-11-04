@@ -31,6 +31,8 @@ func (s *UserController) Run(c *gin.Context) {
 	case c.Request.Method == "DELETE":
 		display.IsLogin(data)
 		s.delete()
+	default:
+		display.Show(common.StatusOk)
 	}
 }
 
