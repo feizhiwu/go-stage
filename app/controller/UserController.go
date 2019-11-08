@@ -7,7 +7,6 @@ import (
 )
 
 type UserController struct {
-	data map[string]interface{}
 }
 
 //控制器入口

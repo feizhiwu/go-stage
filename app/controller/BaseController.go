@@ -6,7 +6,3 @@ import (
 
 var data map[string]interface{}
 var display *common.Display
-
-func init() {
-	data = make(map[string]interface{})
-}
