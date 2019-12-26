@@ -6,9 +6,11 @@ import (
 )
 
 type IndexController struct {
+	display *common.Display
+	data    map[string]interface{}
 }
 
 func (s *IndexController) Run(c *gin.Context) {
-	display = &common.Display{Context: c}
-	display.Show("来啦，老弟")
+	s.display = &common.Display{Context: c}
+	s.display.Show("来啦，老弟")
 }
