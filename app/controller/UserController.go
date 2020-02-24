@@ -35,8 +35,9 @@ func (s *UserController) Run(c *gin.Context) {
 		s.display.IsLogin(s.data)
 		s.delete()
 	default:
-		s.display.Show(common.StatusOk)
+		s.display.Show(common.StatusOK)
 	}
+	s.display.Finish()
 }
 
 func (s *UserController) add() {
@@ -68,11 +69,11 @@ func (s *UserController) info() {
 func (s *UserController) update() {
 	s.display.HasKey(s.data)
 	new(service.UserService).Update(s.data)
-	s.display.Show(common.StatusOk)
+	s.display.Show(common.StatusOK)
 }
 
 func (s *UserController) delete() {
 	s.display.HasKey(s.data)
 	new(service.UserService).Delete(common.MakeUint(s.data["id"]))
-	s.display.Show(common.StatusOk)
+	s.display.Show(common.StatusOK)
 }

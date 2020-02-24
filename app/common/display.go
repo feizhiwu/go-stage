@@ -8,8 +8,13 @@ import (
 
 const (
 	StatusInit = 0
-	StatusOk   = 10000
+	StatusOK   = 10000
+	StatusWarn = 80006
 )
+
+type Render interface {
+	Output(interface{})
+}
 
 type Body struct {
 	Status int         `json:"status"`
@@ -17,41 +22,51 @@ type Body struct {
 	Body   interface{} `json:"body"`
 }
 
-type Display struct {
+type JsonApi struct {
 	Context *gin.Context
 	Body    Body
 }
 
+func (j *JsonApi) Output(mix interface{}) {
+	message := new(config.Message)
+	j.Body.Status = StatusOK
+	if val, ok := mix.(int); ok {
+		j.Body.Status = val
+		j.Body.Msg = message.GetMessage(j.Body.Status)
+		j.Body.Body = nil
+	} else if val, ok := mix.(string); ok {
+		j.Body.Status = 11000
+		j.Body.Msg = val
+		j.Body.Body = nil
+	} else {
+		j.Body.Msg = message.GetMessage(j.Body.Status)
+		j.Body.Body = mix
+	}
+	j.Context.JSON(http.StatusOK, j.Body)
+	j.Context.Abort()
+}
+
+type Display struct {
+	Context *gin.Context
+	Status  int
+	Render  Render
+}
+
 //统一输出api数据
 func (d *Display) Show(mix interface{}) {
-	message := new(config.Message)
-	if d.Body.Status == StatusInit {
-		d.Body.Status = StatusOk
+	if d.Status == StatusInit {
+		d.Status = StatusOK
 	}
-	if d.Body.Status != StatusOk {
-		d.Body.Msg = message.GetMessage(d.Body.Status)
-		d.Body.Body = nil
-	} else {
-		if val, ok := mix.(int); ok {
-			d.Body.Status = val
-			d.Body.Msg = message.GetMessage(d.Body.Status)
-			d.Body.Body = nil
-		} else if val, ok := mix.(string); ok {
-			d.Body.Status = 11000
-			d.Body.Msg = val
-			d.Body.Body = nil
-		} else {
-			d.Body.Msg = message.GetMessage(d.Body.Status)
-			d.Body.Body = mix
-		}
+	//默认json格式
+	if d.Render == nil {
+		d.Render = &JsonApi{Context: d.Context}
 	}
-	d.Context.JSON(http.StatusOK, d.Body)
-	d.Context.Abort()
+	d.Render.Output(mix)
 }
 
 //参数检测
 func (d *Display) IsEmpty(val map[int]string, data map[string]interface{}) {
-	d.Body.Status = StatusOk
+	d.Status = StatusOK
 	for k, v := range val {
 		if data[v] == nil {
 			panic(k)
@@ -70,6 +85,21 @@ func (d *Display) HasKey(data map[string]interface{}) {
 func (d *Display) IsLogin(data map[string]interface{}) {
 	if data["mid"] == nil {
 		panic(80003)
+	}
+}
+
+func (d *Display) CheckAction(data map[string]interface{}, value string) bool {
+	d.Status = StatusWarn
+	if data["action"].(string) == value {
+		d.Status = StatusOK
+		return true
+	}
+	return false
+}
+
+func (d *Display) Finish() {
+	if d.Status != StatusOK {
+		d.Show(StatusWarn)
 	}
 }
 

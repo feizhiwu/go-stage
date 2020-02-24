@@ -22,6 +22,7 @@ func (s *UserService) Add(data map[string]interface{}) uint {
 func (s *UserService) GetInfo(id uint) model.User {
 	s.UD = new(dao.UserDao)
 	s.UD.User.Id = id
+	s.UD.GetOne()
 	return s.UD.User
 }
 

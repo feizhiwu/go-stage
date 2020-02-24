@@ -1,7 +1,6 @@
 package config
 
 import (
-	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
@@ -9,6 +8,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
+	"strings"
 )
 
 var DB *gorm.DB
@@ -17,9 +17,28 @@ func GetValue(key string) interface{} {
 	dir, _ := os.Getwd()
 	filePath := path.Join(dir, "/config/config.yml")
 	fileData, _ := ioutil.ReadFile(filePath)
-	var config map[string]interface{}
+	var config map[interface{}]interface{}
 	yaml.Unmarshal(fileData, &config)
-	return config[key]
+	if gin.Mode() == gin.ReleaseMode {
+		config = config["release"].(map[interface{}]interface{})
+	} else {
+		config = config["test"].(map[interface{}]interface{})
+	}
+	keys := strings.Split(key, ".")
+	length := len(keys)
+	if length == 1 {
+		return config[key]
+	} else {
+		var value interface{}
+		for _, v := range keys {
+			if value == nil {
+				value = config[v]
+			} else {
+				value = value.(map[interface{}]interface{})[v]
+			}
+		}
+		return value
+	}
 }
 
 type DBInfo struct {
@@ -58,18 +77,17 @@ func (d *Database) GetInfo() DBInfo {
 }
 
 type Message struct {
-	Msg string
+	Msg map[int]string
 }
 
 //根据status返回文字说明
 func (m *Message) GetMessage(status int) string {
+	var filePath string
 	dir, _ := os.Getwd()
-	filePath := path.Join(dir, "/config/message.yml")
+	filePath = path.Join(dir, "/config/message.yml")
 	fileData, _ := ioutil.ReadFile(filePath)
 	yaml.Unmarshal(fileData, &m)
-	var message map[int]string
-	json.Unmarshal([]byte(m.Msg), &message)
-	res := message[status]
+	res := m.Msg[status]
 	if res == "" {
 		return m.GetMessage(11000)
 	}

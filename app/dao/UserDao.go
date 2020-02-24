@@ -14,7 +14,6 @@ type UserDao struct {
 func (d *UserDao) Add() {
 	table := config.DB.Table("user")
 	table.Create(&d.User)
-	table.Last(&d.User)
 }
 
 func (d *UserDao) Update(data map[string]interface{}) {
