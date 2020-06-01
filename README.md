@@ -2,6 +2,8 @@
 个人风格的golang版RESTful API项目结构，gin+gorm，简单易上手
 
 结构清晰简单，代码洁癖患者的福音
+## 获取源码
+git clone https://github.com/feizhiwu/toutGin.git
 ## 项目结构
 ```
 |-app
@@ -98,9 +100,6 @@ func User(c *gin.Context) {
 	case c.Request.Method == "DELETE":
 		s.display.IsLogin(s.data)
 		s.delete()
-	default:
-		s.display.Show(common.StatusOK)
-	}
 	s.display.Finish()
 }
 

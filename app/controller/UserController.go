@@ -36,8 +36,6 @@ func User(c *gin.Context) {
 	case c.Request.Method == "DELETE":
 		s.display.IsLogin(s.data)
 		s.delete()
-	default:
-		s.display.Show(common.StatusOK)
 	}
 	s.display.Finish()
 }
