@@ -59,6 +59,8 @@ type Database struct {
 func (d *Database) GetConnect() {
 	database := d.GetInfo()
 	DB, _ = gorm.Open(database.Datatype, database.Username+":"+database.Password+"@/"+database.Database+"?charset=utf8&parseTime=True&loc=Local")
+	//全局禁用表复数
+	DB.SingularTable(true)
 }
 
 //获取数据库配置

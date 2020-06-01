@@ -12,8 +12,7 @@ type UserDao struct {
 }
 
 func (d *UserDao) Add() {
-	table := config.DB.Table("user")
-	table.Create(&d.User)
+	config.DB.Create(&d.User)
 }
 
 func (d *UserDao) Update(data map[string]interface{}) {
@@ -21,7 +20,7 @@ func (d *UserDao) Update(data map[string]interface{}) {
 }
 
 func (d *UserDao) GetOne() {
-	config.DB.Table("user").Where("id  = ?", d.User.Id).First(&d.User)
+	config.DB.Where("id  = ?", d.User.Id).First(&d.User)
 }
 
 func (d *UserDao) Delete() {

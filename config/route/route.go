@@ -24,6 +24,6 @@ func (r *Route) index() {
 func (r *Route) v1() {
 	v1 := r.Engine.Group("v1")
 	{
-		v1.Any("/user", new(controller.UserController).Run)
+		v1.Any("/user", controller.User)
 	}
 }

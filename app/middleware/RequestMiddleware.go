@@ -22,11 +22,11 @@ func (r *RequestMiddleware) InitRequest(c *gin.Context) {
 	json.Unmarshal(raw, &param)
 	if c.GetHeader("token") != "" {
 		//TODO 临时
-		param["mid"] = 1
+		param["login_uid"] = 1
 	}
 	c.Set("param", param)
 	c.Header("Access-Control-Allow-Origin", "*")
-	c.Header("Access-Control-Allow-Credentials", "true");
+	c.Header("Access-Control-Allow-Credentials", "true")
 	c.Header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 	c.Header("Access-Control-Allow-Headers", "X-Requested-With,X_Requested_With,content-type,token")
 }

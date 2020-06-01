@@ -44,14 +44,6 @@ DELETE http://localhost:8080/v1/user
 ```
 ## ROUTE 示例
 ```
-package config
-
-import (
-	"github.com/gin-gonic/gin"
-	"toutGin/app/controller"
-	"toutGin/app/middleware"
-)
-
 type Route struct {
 	Engine *gin.Engine
 }
@@ -70,46 +62,46 @@ func (r *Route) index() {
 func (r *Route) v1() {
 	v1 := r.Engine.Group("v1")
 	{
-		v1.Any("/user", new(controller.UserController).Run)
+		v1.Any("/user", controller.User)
 	}
 }
 ```
 ## CONTROLLER 示例
 ```
-package controller
-
-import (
-	"github.com/gin-gonic/gin"
-	"toutGin/app/common"
-	"toutGin/app/service"
-)
-
 type UserController struct {
-	data map[string]interface{}
+	display *common.Display
+	data    map[string]interface{}
+	us      *service.UserService
 }
 
 //控制器入口
-func (s *UserController) Run(c *gin.Context) {
-	display = &common.Display{Context: c}
-	data = common.GetData(c)
-	defer display.CatchPanic()
+func User(c *gin.Context) {
+	s := &UserController{
+		display: &common.Display{Context: c},
+		data:    common.GetData(c),
+		us:      new(service.UserService),
+	}
+	defer s.display.CatchPanic()
 	switch {
 	case c.Request.Method == "POST":
-		display.IsLogin(data)
+		s.display.IsLogin(s.data)
 		s.add()
 	case c.Request.Method == "GET":
-		if data["id"] != nil {
+		if s.data["id"] != nil {
 			s.info()
 		} else {
 			s.list()
 		}
 	case c.Request.Method == "PUT":
-		display.IsLogin(data)
+		s.display.IsLogin(s.data)
 		s.update()
 	case c.Request.Method == "DELETE":
-		display.IsLogin(data)
+		s.display.IsLogin(s.data)
 		s.delete()
+	default:
+		s.display.Show(common.StatusOK)
 	}
+	s.display.Finish()
 }
 
 func (s *UserController) add() {
@@ -117,66 +109,59 @@ func (s *UserController) add() {
 		20001: "name",
 		20002: "password",
 	}
-	display.IsEmpty(val, data)
-	body := make(map[string]uint)
-	body["id"] = new(service.UserService).Add(data)
-	display.Show(body)
+	s.display.IsEmpty(val, s.data)
+	s.us.Add(s.data)
+	data := map[string]uint{
+		"id": s.us.UD.User.Id,
+	}
+	s.display.Show(data)
 }
 
 func (s *UserController) list() {
 	val := map[int]string{
 		80007: "page",
 	}
-	display.IsEmpty(val, data)
-	body := new(service.UserService).GetList(data)
-	display.Show(body)
+	s.display.IsEmpty(val, s.data)
+	s.us.GetList(s.data)
+	s.display.Show(s.us.UD.UserList)
 }
 
 func (s *UserController) info() {
-	display.HasKey(data)
-	body := new(service.UserService).GetInfo(common.MakeUint(data["id"]))
-	display.Show(body)
+	s.display.HasKey(s.data)
+	s.us.GetInfo(common.MakeUint(s.data["id"]))
+	s.display.Show(s.us.UD.User)
 }
 
 func (s *UserController) update() {
-	display.HasKey(data)
-	new(service.UserService).Update(data)
-	display.Show(common.StatusOk)
+	s.display.HasKey(s.data)
+	s.us.Update(s.data)
+	s.display.Show(common.StatusOK)
 }
 
 func (s *UserController) delete() {
-	display.HasKey(data)
-	new(service.UserService).Delete(common.MakeUint(data["id"]))
-	display.Show(common.StatusOk)
+	s.display.HasKey(s.data)
+	s.us.Delete(common.MakeUint(s.data["id"]))
+	s.display.Show(common.StatusOK)
 }
 ```
 ## SERVICE 示例
 ```
-package service
-
-import (
-	"encoding/json"
-	"toutGin/app/common"
-	"toutGin/app/dao"
-	"toutGin/app/model"
-)
-
 type UserService struct {
 	UD *dao.UserDao
 }
 
-func (s *UserService) Add(data map[string]interface{}) uint {
+func (s *UserService) Add(data map[string]interface{}) {
 	s.UD = new(dao.UserDao)
 	params := common.CopyParams([]string{"name", "password"}, data)
 	json.Unmarshal(common.MakeJson(params), &s.UD.User)
+	s.UD.User.Password = common.EncryptPass(s.UD.User.Password)
 	s.UD.Add()
-	return s.UD.User.Id
 }
 
-func (s *UserService) GetInfo(id uint) model.User {
+func (s *UserService) GetInfo(id uint) {
 	s.UD = new(dao.UserDao)
 	s.UD.User.Id = id
-	return s.UD.User
+	s.UD.GetOne()
 }
 
 func (s *UserService) Update(data map[string]interface{}) {
@@ -191,31 +176,20 @@ func (s *UserService) Delete(id uint) {
 	s.UD.Delete()
 }
 
-func (s *UserService) GetList(data map[string]interface{}) []model.User {
+func (s *UserService) GetList(data map[string]interface{}) {
 	s.UD = new(dao.UserDao)
 	s.UD.GetAll(data)
-	return s.UD.UserList
 }
 ```
 ## DAO 示例
 ```
-package dao
-
-import (
-	"toutGin/app/common"
-	"toutGin/app/config"
-	"toutGin/app/model"
-)
-
 type UserDao struct {
 	User     model.User
 	UserList []model.User
 }
 
 func (d *UserDao) Add() {
-	table := config.DB.Table("user")
-	table.Create(&d.User)
-	table.Last(&d.User)
+	config.DB.Create(&d.User)
 }
 
 func (d *UserDao) Update(data map[string]interface{}) {
@@ -223,7 +197,7 @@ func (d *UserDao) Update(data map[string]interface{}) {
 }
 
 func (d *UserDao) GetOne() {
-	config.DB.Table("user").Where("id  = ?", d.User.Id).First(&d.User)
+	config.DB.Where("id  = ?", d.User.Id).First(&d.User)
 }
 
 func (d *UserDao) Delete() {
@@ -237,54 +211,110 @@ func (d *UserDao) GetAll(data map[string]interface{}) {
 ```
 ## 接口统一返回
 ```
-package common
-
-import (
-	"github.com/gin-gonic/gin"
-	"net/http"
-)
-
 const (
 	StatusInit = 0
-	StatusOk   = 10000
+	StatusOK   = 10000
+	StatusWarn = 80006
 )
 
-type Body struct {
-	Status int         `json:"status"`
-	Msg    string      `json:"msg"`
-	Body   interface{} `json:"body"`
+type (
+	Render interface {
+		Output(interface{})
+	}
+
+	Body struct {
+		Status int         `json:"status"`
+		Msg    string      `json:"msg"`
+		Body   interface{} `json:"body"`
+	}
+
+	JsonApi struct {
+		Context *gin.Context
+		Body    Body
+	}
+)
+
+func (j *JsonApi) Output(mix interface{}) {
+	message := new(config.Message)
+	j.Body.Status = StatusOK
+	if val, ok := mix.(int); ok {
+		j.Body.Status = val
+		j.Body.Msg = message.GetMessage(j.Body.Status)
+		j.Body.Body = nil
+	} else if val, ok := mix.(string); ok {
+		j.Body.Status = 11000
+		j.Body.Msg = val
+		j.Body.Body = nil
+	} else {
+		j.Body.Msg = message.GetMessage(j.Body.Status)
+		j.Body.Body = mix
+	}
+	j.Context.JSON(http.StatusOK, j.Body)
+	j.Context.Abort()
 }
 
 type Display struct {
 	Context *gin.Context
-	Body    Body
+	Status  int
+	Render  Render
 }
 
 //统一输出api数据
 func (d *Display) Show(mix interface{}) {
-	message := new(Message)
-	if d.Body.Status == StatusInit {
-		d.Body.Status = StatusOk
+	if d.Status == StatusInit {
+		d.Status = StatusOK
 	}
-	if d.Body.Status != StatusOk {
-		d.Body.Msg = message.GetMessage(d.Body.Status)
-		d.Body.Body = nil
-	} else {
-		if val, ok := mix.(int); ok {
-			d.Body.Status = val
-			d.Body.Msg = message.GetMessage(d.Body.Status)
-			d.Body.Body = nil
-		} else if val, ok := mix.(string); ok {
-			d.Body.Status = 11000
-			d.Body.Msg = val
-			d.Body.Body = nil
-		} else {
-			d.Body.Msg = message.GetMessage(d.Body.Status)
-			d.Body.Body = mix
+	//默认json格式
+	if d.Render == nil {
+		d.Render = &JsonApi{Context: d.Context}
+	}
+	d.Render.Output(mix)
+}
+
+//参数检测
+func (d *Display) IsEmpty(val map[int]string, data map[string]interface{}) {
+	d.Status = StatusOK
+	for k, v := range val {
+		if data[v] == nil {
+			panic(k)
 		}
 	}
-	d.Context.JSON(http.StatusOK, d.Body)
-	d.Context.Abort()
+}
+
+//检测更新主键是否为空
+func (d *Display) HasKey(data map[string]interface{}) {
+	if data["id"] == nil {
+		panic(80001)
+	}
+}
+
+//检测是否登录
+func (d *Display) IsLogin(data map[string]interface{}) {
+	if data["login_uid"] == nil {
+		panic(80003)
+	}
+}
+
+func (d *Display) CheckAction(data map[string]interface{}, value string) bool {
+	d.Status = StatusWarn
+	if data["action"].(string) == value {
+		d.Status = StatusOK
+		return true
+	}
+	return false
+}
+
+func (d *Display) Finish() {
+	if d.Status != StatusOK {
+		d.Show(StatusWarn)
+	}
+}
+
+//统一中断输出
+func (d *Display) CatchPanic() {
+	if r := recover(); r != nil {
+		d.Show(r)
+	}
 }
 ```
 ## 测试user表结构

@@ -12,20 +12,22 @@ const (
 	StatusWarn = 80006
 )
 
-type Render interface {
-	Output(interface{})
-}
+type (
+	Render interface {
+		Output(interface{})
+	}
 
-type Body struct {
-	Status int         `json:"status"`
-	Msg    string      `json:"msg"`
-	Body   interface{} `json:"body"`
-}
+	Body struct {
+		Status int         `json:"status"`
+		Msg    string      `json:"msg"`
+		Body   interface{} `json:"body"`
+	}
 
-type JsonApi struct {
-	Context *gin.Context
-	Body    Body
-}
+	JsonApi struct {
+		Context *gin.Context
+		Body    Body
+	}
+)
 
 func (j *JsonApi) Output(mix interface{}) {
 	message := new(config.Message)
@@ -83,7 +85,7 @@ func (d *Display) HasKey(data map[string]interface{}) {
 
 //检测是否登录
 func (d *Display) IsLogin(data map[string]interface{}) {
-	if data["mid"] == nil {
+	if data["login_uid"] == nil {
 		panic(80003)
 	}
 }

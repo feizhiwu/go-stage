@@ -9,14 +9,16 @@ import (
 type UserController struct {
 	display *common.Display
 	data    map[string]interface{}
+	us      *service.UserService
 }
 
 //控制器入口
-func (s *UserController) Run(c *gin.Context) {
-	//防止变量污染
-	s = new(UserController)
-	s.display = &common.Display{Context: c}
-	s.data = common.GetData(c)
+func User(c *gin.Context) {
+	s := &UserController{
+		display: &common.Display{Context: c},
+		data:    common.GetData(c),
+		us:      new(service.UserService),
+	}
 	defer s.display.CatchPanic()
 	switch {
 	case c.Request.Method == "POST":
@@ -46,9 +48,11 @@ func (s *UserController) add() {
 		20002: "password",
 	}
 	s.display.IsEmpty(val, s.data)
-	body := make(map[string]uint)
-	body["id"] = new(service.UserService).Add(s.data)
-	s.display.Show(body)
+	s.us.Add(s.data)
+	data := map[string]uint{
+		"id": s.us.UD.User.Id,
+	}
+	s.display.Show(data)
 }
 
 func (s *UserController) list() {
@@ -56,24 +60,24 @@ func (s *UserController) list() {
 		80007: "page",
 	}
 	s.display.IsEmpty(val, s.data)
-	body := new(service.UserService).GetList(s.data)
-	s.display.Show(body)
+	s.us.GetList(s.data)
+	s.display.Show(s.us.UD.UserList)
 }
 
 func (s *UserController) info() {
 	s.display.HasKey(s.data)
-	body := new(service.UserService).GetInfo(common.MakeUint(s.data["id"]))
-	s.display.Show(body)
+	s.us.GetInfo(common.MakeUint(s.data["id"]))
+	s.display.Show(s.us.UD.User)
 }
 
 func (s *UserController) update() {
 	s.display.HasKey(s.data)
-	new(service.UserService).Update(s.data)
+	s.us.Update(s.data)
 	s.display.Show(common.StatusOK)
 }
 
 func (s *UserController) delete() {
 	s.display.HasKey(s.data)
-	new(service.UserService).Delete(common.MakeUint(s.data["id"]))
+	s.us.Delete(common.MakeUint(s.data["id"]))
 	s.display.Show(common.StatusOK)
 }
