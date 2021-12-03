@@ -5,3 +5,8 @@ type User struct {
 	Name     string `json:"name"`
 	Password string `json:"password"`
 }
+
+type UserList struct {
+	List  []User `json:"list"`
+	Pages Pages  `json:"pages"`
+}

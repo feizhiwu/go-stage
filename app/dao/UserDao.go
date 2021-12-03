@@ -1,14 +1,14 @@
 package dao
 
 import (
-	"toutGin/app/common"
-	"toutGin/app/model"
-	"toutGin/config"
+	"stage/app/model"
+	"stage/app/plugin/driver"
+	"stage/config"
 )
 
 type UserDao struct {
 	User     model.User
-	UserList []model.User
+	UserList model.UserList
 }
 
 func (d *UserDao) Add() {
@@ -28,6 +28,8 @@ func (d *UserDao) Delete() {
 }
 
 func (d *UserDao) GetAll(data map[string]interface{}) {
-	limit := 20
-	config.DB.Table("user").Limit(limit).Offset(common.GetOffset(data["page"], limit)).Find(&d.UserList)
+	db := config.DB.Model(model.User{})
+	query := driver.NewQuery(&db, data)
+	query.Like("name") //如果传参data["name"]，则进行like匹配查询
+	query.List(&d.UserList.List).Pages(&d.UserList.Pages)
 }

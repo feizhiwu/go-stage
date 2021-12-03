@@ -5,10 +5,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"stage/config"
 	"strconv"
 	"strings"
 	"time"
-	"toutGin/config"
 )
 
 func MakeUint(num interface{}) uint {
@@ -34,8 +34,23 @@ func MakeJson(data map[string]interface{}) []byte {
 	return bytes
 }
 
-func GetOffset(page interface{}, limit int) int {
-	num := MakeInt(page) - 1
+func MakeString(str interface{}) string {
+	switch str.(type) {
+	case string:
+		return str.(string)
+	case int, uint, int8, uint8, int16, uint16, int32, uint32, int64, uint64:
+		return strconv.Itoa(MakeInt(str))
+	case float32:
+		return strconv.FormatFloat(float64(str.(float32)), 'f', -1, 32)
+	case float64:
+		return strconv.FormatFloat(str.(float64), 'f', -1, 32)
+	default:
+		return ""
+	}
+}
+
+func GetOffset(page interface{}, limit uint) uint {
+	num := MakeUint(page) - 1
 	if num < 0 {
 		num = 0
 	}

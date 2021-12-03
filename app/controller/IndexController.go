@@ -2,7 +2,7 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
-	"toutGin/app/common"
+	"stage/app/common"
 )
 
 type IndexController struct {

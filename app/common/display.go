@@ -3,7 +3,7 @@ package common
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"toutGin/config"
+	"stage/config"
 )
 
 const (
@@ -90,9 +90,11 @@ func (d *Display) IsLogin(data map[string]interface{}) {
 	}
 }
 
-func (d *Display) CheckAction(data map[string]interface{}, value string) bool {
+// CheckAction 行为检查
+func (d *Display) CheckAction(value string) bool {
 	d.Status = StatusWarn
-	if data["action"].(string) == value {
+	action := d.Context.GetHeader("action")
+	if action != "" && action == value {
 		d.Status = StatusOK
 		return true
 	}

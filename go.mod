@@ -1,4 +1,4 @@
-module toutGin
+module stage
 
 go 1.13
 

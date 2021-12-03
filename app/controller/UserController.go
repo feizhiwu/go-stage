@@ -2,8 +2,8 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
-	"toutGin/app/common"
-	"toutGin/app/service"
+	"stage/app/common"
+	"stage/app/service"
 )
 
 type UserController struct {
@@ -12,7 +12,7 @@ type UserController struct {
 	us      *service.UserService
 }
 
-//控制器入口
+// User 控制器入口
 func User(c *gin.Context) {
 	s := &UserController{
 		display: &common.Display{Context: c},
@@ -21,21 +21,24 @@ func User(c *gin.Context) {
 	}
 	defer s.display.CatchPanic()
 	switch {
-	case c.Request.Method == "POST":
-		s.display.IsLogin(s.data)
-		s.add()
 	case c.Request.Method == "GET":
-		if s.data["id"] != nil {
-			s.info()
-		} else {
+		if s.display.CheckAction("list") {
 			s.list()
+		} else if s.display.CheckAction("info") {
+			s.info()
+		}
+	case c.Request.Method == "POST":
+		if s.display.CheckAction("add") {
+			s.add()
 		}
 	case c.Request.Method == "PUT":
-		s.display.IsLogin(s.data)
-		s.update()
+		if s.display.CheckAction("update") {
+			s.update()
+		}
 	case c.Request.Method == "DELETE":
-		s.display.IsLogin(s.data)
-		s.delete()
+		if s.display.CheckAction("delete") {
+			s.delete()
+		}
 	}
 	s.display.Finish()
 }

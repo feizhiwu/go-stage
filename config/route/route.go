@@ -2,8 +2,8 @@ package route
 
 import (
 	"github.com/gin-gonic/gin"
-	"toutGin/app/controller"
-	"toutGin/app/middleware"
+	"stage/app/controller"
+	"stage/app/middleware"
 )
 
 type Route struct {
