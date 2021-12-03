@@ -26,9 +26,8 @@ git clone https://github.com/feizhiwu/toutGin.git
 ```
 controller -> service -> dao
 # controller严禁复杂业务，严禁直接调用dao，更严禁写sql语句
-# 要优雅，不要凌乱，乖~
 ```
-## REST URL
+## RESTful API
 ```
 GET http://localhost:8080/v1/user
 POST http://localhost:8080/v1/user
