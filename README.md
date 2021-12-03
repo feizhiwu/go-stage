@@ -41,7 +41,7 @@ curl --location --request POST 'http://localhost:8080/v1/user' \
 }'
 
 用户列表：
-curl --location --request GET 'http://localhost:8080/v1/user?page=1&size=10' \
+curl --location --request GET 'http://localhost:8080/v1/user?page=1&limit=10' \
 --header 'action: list'
 
 用户详情：
