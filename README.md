@@ -1,9 +1,10 @@
-# toutGin
-个人风格的golang版RESTful API项目结构，gin+gorm，简单易上手
+# stage
+gin+gorm 面向接口（api）简易小demo，初学者也能快速上手
 
-结构清晰简单，代码洁癖患者的福音
-## 获取源码
-git clone https://github.com/feizhiwu/toutGin.git
+RESTful架构，结构清晰，传参灵活
+
+go已经学废了？来看看java吧，跳转门：https://github.com/feizhiwu/java-stage
+
 ## 项目结构
 ```
 |-app
