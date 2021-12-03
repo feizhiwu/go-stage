@@ -1,11 +1,13 @@
 # stage
+
 gin+gorm 面向接口（api）简易小demo，初学者也能快速上手
 
 RESTful架构，结构清晰，传参灵活
 
-go已经学废了？来看看java吧，跳转门：https://github.com/feizhiwu/java-stage
+go已经学废了？来看看java吧，传送门：https://github.com/feizhiwu/java-stage
 
 ## 项目结构
+
 ```
 |-app
     |-common 公共方法
@@ -23,12 +25,16 @@ go已经学废了？来看看java吧，跳转门：https://github.com/feizhiwu/j
     |-config.go 配置方法
 |-main.go 程序执行入口
 ```
+
 ## 模块调用流程
+
 ```
 controller -> service -> dao
 # controller严禁复杂业务，严禁直接调用dao，更严禁写sql语句
 ```
+
 ## RESTful API
+
 ```
 GET http://localhost:8080/v1/user
 POST http://localhost:8080/v1/user
@@ -36,7 +42,9 @@ PUT http://localhost:8080/v1/user
 DELETE http://localhost:8080/v1/user
 # api POST，PUT，DELETE 推荐使用 body json 传参，GET兼容 body 和 url 传参
 ```
+
 ## JSON RESULT
+
 ```
 {
     "status": 10000,
@@ -44,7 +52,9 @@ DELETE http://localhost:8080/v1/user
     "body": null
 }
 ```
+
 ## ROUTE 示例
+
 ```
 type Route struct {
 	Engine *gin.Engine
@@ -68,7 +78,9 @@ func (r *Route) v1() {
 	}
 }
 ```
+
 ## CONTROLLER 示例
+
 ```
 type UserController struct {
 	display *common.Display
@@ -143,7 +155,9 @@ func (s *UserController) delete() {
 	s.display.Show(common.StatusOK)
 }
 ```
+
 ## SERVICE 示例
+
 ```
 type UserService struct {
 	UD *dao.UserDao
@@ -180,7 +194,9 @@ func (s *UserService) GetList(data map[string]interface{}) {
 	s.UD.GetAll(data)
 }
 ```
+
 ## DAO 示例
+
 ```
 type UserDao struct {
 	User     model.User
@@ -208,7 +224,9 @@ func (d *UserDao) GetAll(data map[string]interface{}) {
 	config.DB.Table("user").Limit(limit).Offset(common.GetOffset(data["page"], limit)).Find(&d.UserList)
 }
 ```
+
 ## 接口统一返回
+
 ```
 const (
 	StatusInit = 0
@@ -316,7 +334,9 @@ func (d *Display) CatchPanic() {
 	}
 }
 ```
+
 ## 测试user表结构
+
 ```
 CREATE TABLE `user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
