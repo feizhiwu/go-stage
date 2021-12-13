@@ -1,8 +1,8 @@
 package dao
 
 import (
+	"github.com/feizhiwu/gs/kokomi"
 	"stage/app/model"
-	"stage/app/plugin/driver"
 	"stage/config"
 )
 
@@ -29,7 +29,7 @@ func (d *UserDao) Delete() {
 
 func (d *UserDao) GetAll(data map[string]interface{}) {
 	db := config.DB.Model(model.User{})
-	query := driver.NewQuery(&db, data)
+	query := kokomi.NewQuery(&db, data)
 	query.Like("name") //如果传参data["name"]，则进行like匹配查询
 	query.List(&d.UserList.List).Pages(&d.UserList.Pages)
 }
