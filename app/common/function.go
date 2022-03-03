@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"stage/config"
+	"stage/config/conf"
 	"strconv"
 	"strings"
 	"time"
@@ -73,7 +73,7 @@ func CopyParams(val []string, data map[string]interface{}) map[string]interface{
 }
 
 func EncryptPass(pass string) string {
-	salt := config.GetValue("salt").(string)
+	salt := conf.GetValue("salt").(string)
 	sum := md5.Sum([]byte(pass + salt))
 	return fmt.Sprintf("%x", sum)
 }

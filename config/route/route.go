@@ -10,7 +10,7 @@ type Route struct {
 	Engine *gin.Engine
 }
 
-//路由路口
+// Run 路由路口
 func (r *Route) Run() {
 	r.Engine.Use(new(middleware.RequestMiddleware).InitRequest)
 	r.index()

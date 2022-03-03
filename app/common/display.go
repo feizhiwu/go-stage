@@ -3,7 +3,7 @@ package common
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"stage/config"
+	"stage/config/conf"
 )
 
 const (
@@ -30,7 +30,7 @@ type (
 )
 
 func (j *JsonApi) Output(mix interface{}) {
-	message := new(config.Message)
+	message := new(conf.Message)
 	j.Body.Status = StatusOK
 	if val, ok := mix.(int); ok {
 		j.Body.Status = val

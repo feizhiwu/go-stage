@@ -1,4 +1,4 @@
-package config
+package conf
 
 import (
 	"github.com/gin-gonic/gin"
@@ -63,7 +63,7 @@ func (d *Database) GetConnect() {
 	DB.SingularTable(true)
 }
 
-//获取数据库配置
+// GetInfo 获取数据库配置
 func (d *Database) GetInfo() DBInfo {
 	dir, _ := os.Getwd()
 	filePath := path.Join(dir, "/config/database.yml")
@@ -82,7 +82,7 @@ type Message struct {
 	Msg map[int]string
 }
 
-//根据status返回文字说明
+// GetMessage 根据status返回文字说明
 func (m *Message) GetMessage(status int) string {
 	var filePath string
 	dir, _ := os.Getwd()
