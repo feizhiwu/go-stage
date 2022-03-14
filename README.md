@@ -4,9 +4,11 @@ gin+gorm 面向接口（api）简易小demo，初学者也能快速上手
 
 RESTful架构，结构清晰，传参灵活
 
+学废了学废了，我要自己写框架？传送门：https://github.com/feizhiwu/fin
+
 go已经学废了？来看看java吧，传送门：https://github.com/feizhiwu/java-stage
 
-## 项目结构
+### 项目结构
 
 ```
 |-app
@@ -66,7 +68,7 @@ curl --location --request DELETE 'http://localhost:8080/v1/user' \
 }'
 ```
 
-注：一个router下的header action不允许重复！控制器通过action定位方法，联调时也可以通过action快速定位接口
+注：一个router下的header action需与controller方法同名，联调时可以通过action快速定位接口
 
 ### 返参示例
 

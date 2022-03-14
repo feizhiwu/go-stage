@@ -23,13 +23,17 @@ type (
 		Body   interface{} `json:"body"`
 	}
 
-	JsonApi struct {
+	jsonApi struct {
 		Context *gin.Context
 		Body    Body
 	}
 )
 
-func (j *JsonApi) Output(mix interface{}) {
+func Json(c *gin.Context) *jsonApi {
+	return &jsonApi{Context: c}
+}
+
+func (j *jsonApi) Output(mix interface{}) {
 	message := new(conf.Message)
 	j.Body.Status = StatusOK
 	if val, ok := mix.(int); ok {
@@ -48,27 +52,58 @@ func (j *JsonApi) Output(mix interface{}) {
 	j.Context.Abort()
 }
 
-type Display struct {
-	Context *gin.Context
-	Status  int
-	Render  Render
+func NewDisplay(c *gin.Context) *Display {
+	d := &Display{
+		Context: c,
+		Params:  GetParams(c),
+		funcs:   make(map[string]func()),
+	}
+	return d
 }
 
-//统一输出api数据
+type Display struct {
+	*gin.Context
+	Render
+	Params map[string]interface{}
+	status int
+	funcs  map[string]func()
+	checks struct {
+		verify  bool
+		actions []string
+	}
+}
+
+func (d *Display) Get(f func()) {
+	d.funcs["GET-"+GetFuncName(f)] = f
+}
+
+func (d *Display) Post(f func()) {
+	d.funcs["POST-"+GetFuncName(f)] = f
+}
+
+func (d *Display) Put(f func()) {
+	d.funcs["PUT-"+GetFuncName(f)] = f
+}
+
+func (d *Display) Delete(f func()) {
+	d.funcs["DELETE-"+GetFuncName(f)] = f
+}
+
+// Show 统一输出api数据
 func (d *Display) Show(mix interface{}) {
-	if d.Status == StatusInit {
-		d.Status = StatusOK
+	if d.status == StatusInit {
+		d.status = StatusOK
 	}
 	//默认json格式
 	if d.Render == nil {
-		d.Render = &JsonApi{Context: d.Context}
+		d.Render = Json(d.Context)
 	}
 	d.Render.Output(mix)
 }
 
-//参数检测
-func (d *Display) IsEmpty(val map[int]string, data map[string]interface{}) {
-	d.Status = StatusOK
+// Validate 参数检测
+func (d *Display) Validate(val map[int]string, data map[string]interface{}) {
+	d.status = StatusOK
 	for k, v := range val {
 		if data[v] == nil {
 			panic(k)
@@ -76,38 +111,71 @@ func (d *Display) IsEmpty(val map[int]string, data map[string]interface{}) {
 	}
 }
 
-//检测更新主键是否为空
+// HasKey 检测更新主键是否为空
 func (d *Display) HasKey(data map[string]interface{}) {
 	if data["id"] == nil {
 		panic(80001)
 	}
 }
 
-//检测是否登录
+// IsLogin 检测是否登录
 func (d *Display) IsLogin(data map[string]interface{}) {
 	if data["login_uid"] == nil {
 		panic(80003)
 	}
 }
 
+// ForceLogin 需要强制登陆
+func (d *Display) ForceLogin() {
+	if GetParams(d.Context)["login_uid"] == nil {
+		panic(80003)
+	}
+}
+
 // CheckAction 行为检查
 func (d *Display) CheckAction(value string) bool {
-	d.Status = StatusWarn
+	d.status = StatusWarn
 	action := d.Context.GetHeader("action")
 	if action != "" && action == value {
-		d.Status = StatusOK
+		d.status = StatusOK
 		return true
 	}
 	return false
 }
 
 func (d *Display) Finish() {
-	if d.Status != StatusOK {
+	if d.status != StatusOK {
 		d.Show(StatusWarn)
 	}
 }
 
-//统一中断输出
+func (d *Display) Run() {
+	action := d.GetHeader("action")
+	f := d.funcs[d.Request.Method+"-"+action]
+	if f != nil {
+		if len(d.checks.actions) > 0 {
+			if d.checks.verify && InArray(len(d.checks.actions), func(i int) bool {
+				return d.checks.actions[i] == action
+			}) {
+				d.ForceLogin()
+				f()
+			} else if !d.checks.verify && !InArray(len(d.checks.actions), func(i int) bool {
+				return d.checks.actions[i] == action
+			}) {
+				d.ForceLogin()
+				f()
+			} else {
+				f()
+			}
+		} else {
+			f()
+		}
+	} else {
+		d.Show(StatusWarn)
+	}
+}
+
+// CatchPanic 统一中断输出
 func (d *Display) CatchPanic() {
 	if r := recover(); r != nil {
 		d.Show(r)

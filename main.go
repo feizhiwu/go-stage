@@ -11,6 +11,6 @@ func main() {
 	new(conf.Database).GetConnect()
 	defer conf.DB.Close()
 	engine := gin.New()
-	(&route.Route{Engine: engine}).Run()
+	route.Run(engine)
 	engine.Run(":8080")
 }

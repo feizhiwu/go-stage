@@ -6,11 +6,12 @@ import (
 )
 
 type IndexController struct {
-	display *common.Display
-	data    map[string]interface{}
+	*common.Display
 }
 
-func (s *IndexController) Run(c *gin.Context) {
-	s.display = &common.Display{Context: c}
-	s.display.Show("来啦，老弟")
+func Index(c *gin.Context) {
+	s := &IndexController{
+		common.NewDisplay(c),
+	}
+	s.Show(10000)
 }

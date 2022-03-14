@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"reflect"
+	"runtime"
 	"stage/config/conf"
 	"strconv"
 	"strings"
@@ -57,8 +59,8 @@ func GetOffset(page interface{}, limit uint) uint {
 	return num * limit
 }
 
-func GetData(c *gin.Context) map[string]interface{} {
-	data, _ := c.Get("param")
+func GetParams(c *gin.Context) map[string]interface{} {
+	data, _ := c.Get("params")
 	return data.(map[string]interface{})
 }
 
@@ -141,4 +143,10 @@ func InArray(search interface{}, array interface{}) bool {
 
 func Implode(array interface{}, sep string) string {
 	return strings.Replace(strings.Trim(fmt.Sprint(array), "[]"), " ", sep, -1)
+}
+
+func GetFuncName(f interface{}) string {
+	name := runtime.FuncForPC(reflect.ValueOf(f).Pointer()).Name()
+	arr := strings.Split(name, ".")
+	return strings.Split(arr[len(arr)-1], "-")[0]
 }

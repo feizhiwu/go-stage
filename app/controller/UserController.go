@@ -2,45 +2,27 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
-	"stage/app/common"
+	common "stage/app/common"
 	"stage/app/service"
 )
 
 type UserController struct {
-	display *common.Display
-	data    map[string]interface{}
-	us      *service.UserService
+	*common.Display
+	us *service.UserService
 }
 
 // User 控制器入口
 func User(c *gin.Context) {
 	s := &UserController{
-		display: &common.Display{Context: c},
-		data:    common.GetData(c),
-		us:      new(service.UserService),
+		common.NewDisplay(c),
+		new(service.UserService),
 	}
-	defer s.display.CatchPanic()
-	switch {
-	case c.Request.Method == "GET":
-		if s.display.CheckAction("list") {
-			s.list()
-		} else if s.display.CheckAction("info") {
-			s.info()
-		}
-	case c.Request.Method == "POST":
-		if s.display.CheckAction("add") {
-			s.add()
-		}
-	case c.Request.Method == "PUT":
-		if s.display.CheckAction("update") {
-			s.update()
-		}
-	case c.Request.Method == "DELETE":
-		if s.display.CheckAction("delete") {
-			s.delete()
-		}
-	}
-	s.display.Finish()
+	s.Get(s.list)
+	s.Get(s.info)
+	s.Post(s.add)
+	s.Put(s.update)
+	s.Delete(s.delete)
+	s.Run()
 }
 
 func (s *UserController) add() {
@@ -48,37 +30,37 @@ func (s *UserController) add() {
 		20001: "name",
 		20002: "password",
 	}
-	s.display.IsEmpty(val, s.data)
-	s.us.Add(s.data)
+	s.Validate(val, s.Params)
+	s.us.Add(s.Params)
 	data := map[string]uint{
 		"id": s.us.UD.User.Id,
 	}
-	s.display.Show(data)
+	s.Show(data)
 }
 
 func (s *UserController) list() {
 	val := map[int]string{
 		80007: "page",
 	}
-	s.display.IsEmpty(val, s.data)
-	s.us.GetList(s.data)
-	s.display.Show(s.us.UD.UserList)
+	s.Validate(val, s.Params)
+	s.us.GetList(s.Params)
+	s.Show(s.us.UD.UserList)
 }
 
 func (s *UserController) info() {
-	s.display.HasKey(s.data)
-	s.us.GetInfo(common.MakeUint(s.data["id"]))
-	s.display.Show(s.us.UD.User)
+	s.HasKey(s.Params)
+	s.us.GetInfo(common.MakeUint(s.Params["id"]))
+	s.Show(s.us.UD.User)
 }
 
 func (s *UserController) update() {
-	s.display.HasKey(s.data)
-	s.us.Update(s.data)
-	s.display.Show(common.StatusOK)
+	s.HasKey(s.Params)
+	s.us.Update(s.Params)
+	s.Show(common.StatusOK)
 }
 
 func (s *UserController) delete() {
-	s.display.HasKey(s.data)
-	s.us.Delete(common.MakeUint(s.data["id"]))
-	s.display.Show(common.StatusOK)
+	s.HasKey(s.Params)
+	s.us.Delete(common.MakeUint(s.Params["id"]))
+	s.Show(common.StatusOK)
 }
