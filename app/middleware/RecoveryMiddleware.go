@@ -6,19 +6,13 @@ import (
 	"log"
 	"runtime"
 	"stage/app/common"
-	"stage/config/conf"
 	"strings"
 )
 
 func Recovery(c *gin.Context) {
 	defer func() {
 		if err := recover(); err != nil {
-			var message string
-			if _, ok := err.(int); ok {
-				message = conf.Message(err.(int))
-			} else {
-				message = fmt.Sprintf("%s", err)
-			}
+			message := fmt.Sprintf("%s", err)
 			for _, v := range writer() {
 				log.New(v, "", log.LstdFlags).Printf("%s\n\n", trace(message))
 				log.New(v, "", log.LstdFlags).Printf("%s", "----------------------------------------------------------------------")

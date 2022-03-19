@@ -110,6 +110,7 @@ func writer() (writer []*os.File) {
 	}
 	logFile, _ := os.OpenFile(filePath, os.O_WRONLY|os.O_APPEND, os.ModePerm)
 	writer = append(writer, logFile)
+	//debug模式，在控制台输出日志信息
 	if gin.Mode() == gin.DebugMode {
 		writer = append(writer, os.Stdout)
 	}

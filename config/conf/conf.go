@@ -18,6 +18,7 @@ var (
 	DBS []string
 )
 
+// Config 获取配置信息
 func Config(key string) interface{} {
 	dir, _ := os.Getwd()
 	filePath := path.Join(dir, "/config/config.yml")
@@ -42,6 +43,7 @@ func Config(key string) interface{} {
 	}
 }
 
+// Message 获取状态文本
 func Message(status int) string {
 	var msg map[int]string
 	var filePath string
@@ -52,6 +54,7 @@ func Message(status int) string {
 	return msg[status]
 }
 
+// ConnectDB 连接数据库
 func ConnectDB() {
 	DBC = make(map[string]*gorm.DB)
 	dbConf := Config("db")
@@ -78,6 +81,7 @@ func connectDB(name string, options map[interface{}]interface{}) {
 	}
 	//全局禁用表复数
 	db.SingularTable(true)
+	//保存连接信息，键名与配置信息同名
 	DBS = append(DBS, name)
 	DBC[name] = db
 }

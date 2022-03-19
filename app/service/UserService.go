@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"encoding/json"
+	"github.com/feizhiwu/gs/albedo"
 	"stage/app/common"
 	"stage/app/dao"
 )
@@ -21,7 +22,7 @@ func User(ctx context.Context) *UserService {
 func (s *UserService) Add(data map[string]interface{}) {
 	s.UD = dao.User(s.ctx)
 	params := common.CopyParams([]string{"name", "password"}, data)
-	json.Unmarshal(common.MakeJson(params), &s.UD.User)
+	json.Unmarshal(albedo.MakeJson(params), &s.UD.User)
 	s.UD.User.Password = common.EncryptPass(s.UD.User.Password)
 	s.UD.Add()
 }

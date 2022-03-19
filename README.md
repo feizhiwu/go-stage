@@ -22,9 +22,10 @@ go已经学废了？来看看java吧，传送门：https://github.com/feizhiwu/j
     |-plugin 常用工具类
     |-service 核心业务处理
 |-config 配置文件和统一路由管理
+    |-conf
+        |-conf.go 配置方法    
     |-route
-        |-route.go 路由配置文件
-    |-config.go 配置方法    
+        |-route.go 路由配置文件 
     |-config.yml 统一环境配置文件   
     |-message.yml 统一状态码配置文件
 |-main.go 程序执行入口

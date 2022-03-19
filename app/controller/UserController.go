@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"github.com/feizhiwu/gs/albedo"
 	"github.com/gin-gonic/gin"
 	"stage/app/common"
 	"stage/app/service"
@@ -49,7 +50,7 @@ func (s *UserController) list() {
 
 func (s *UserController) info() {
 	s.HasKey(s.Params)
-	s.us.GetInfo(common.MakeUint(s.Params["id"]))
+	s.us.GetInfo(albedo.MakeUint(s.Params["id"]))
 	s.Show(s.us.UD.User)
 }
 
@@ -61,6 +62,6 @@ func (s *UserController) update() {
 
 func (s *UserController) delete() {
 	s.HasKey(s.Params)
-	s.us.Delete(common.MakeUint(s.Params["id"]))
+	s.us.Delete(albedo.MakeUint(s.Params["id"]))
 	s.Show(common.StatusOK)
 }
