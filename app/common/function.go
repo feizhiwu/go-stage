@@ -75,7 +75,7 @@ func CopyParams(val []string, data map[string]interface{}) map[string]interface{
 }
 
 func EncryptPass(pass string) string {
-	salt := conf.GetValue("salt").(string)
+	salt := conf.Config("salt").(string)
 	sum := md5.Sum([]byte(pass + salt))
 	return fmt.Sprintf("%x", sum)
 }

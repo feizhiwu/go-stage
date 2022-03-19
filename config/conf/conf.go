@@ -1,6 +1,8 @@
 package conf
 
 import (
+	"fmt"
+	"github.com/feizhiwu/gs/albedo"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
@@ -11,19 +13,18 @@ import (
 	"strings"
 )
 
-var DB *gorm.DB
+var (
+	MainDB   *gorm.DB
+	ClientDB *gorm.DB
+)
 
-func GetValue(key string) interface{} {
+func Config(key string) interface{} {
 	dir, _ := os.Getwd()
 	filePath := path.Join(dir, "/config/config.yml")
 	fileData, _ := ioutil.ReadFile(filePath)
 	var config map[interface{}]interface{}
 	yaml.Unmarshal(fileData, &config)
-	if gin.Mode() == gin.ReleaseMode {
-		config = config["release"].(map[interface{}]interface{})
-	} else {
-		config = config["test"].(map[interface{}]interface{})
-	}
+	config = config[gin.Mode()].(map[interface{}]interface{})
 	keys := strings.Split(key, ".")
 	length := len(keys)
 	if length == 1 {
@@ -41,57 +42,45 @@ func GetValue(key string) interface{} {
 	}
 }
 
-type DBInfo struct {
-	Datatype string `yaml:"datatype"`
-	Hostname string `yaml:"hostname"`
-	Database string `yaml:"database"`
-	Username string `yaml:"username"`
-	Password string `yaml:"password"`
-	Prefix   string `yaml:"prefix"`
-}
-
-type Database struct {
-	Debug   DBInfo
-	Test    DBInfo
-	Release DBInfo
-}
-
-func (d *Database) GetConnect() {
-	database := d.GetInfo()
-	DB, _ = gorm.Open(database.Datatype, database.Username+":"+database.Password+"@/"+database.Database+"?charset=utf8&parseTime=True&loc=Local")
-	//全局禁用表复数
-	DB.SingularTable(true)
-}
-
-// GetInfo 获取数据库配置
-func (d *Database) GetInfo() DBInfo {
-	dir, _ := os.Getwd()
-	filePath := path.Join(dir, "/config/database.yml")
-	fileData, _ := ioutil.ReadFile(filePath)
-	yaml.Unmarshal(fileData, &d)
-	if gin.Mode() == gin.DebugMode {
-		return d.Debug
-	} else if gin.Mode() == gin.TestMode {
-		return d.Test
-	} else {
-		return d.Release
-	}
-}
-
-type Message struct {
-	Msg map[int]string
-}
-
-// GetMessage 根据status返回文字说明
-func (m *Message) GetMessage(status int) string {
+func Message(status int) string {
+	var msg map[int]string
 	var filePath string
 	dir, _ := os.Getwd()
 	filePath = path.Join(dir, "/config/message.yml")
 	fileData, _ := ioutil.ReadFile(filePath)
-	yaml.Unmarshal(fileData, &m)
-	res := m.Msg[status]
-	if res == "" {
-		return m.GetMessage(11000)
+	yaml.Unmarshal(fileData, &msg)
+
+	return msg[status]
+}
+
+func ConnectDB() {
+	dbConf := Config("db")
+	if len(dbConf.(map[interface{}]interface{})) > 1 {
+		for k, v := range dbConf.(map[interface{}]interface{}) {
+			connectDB(albedo.MakeString(k), v.(map[interface{}]interface{}))
+		}
+	} else {
+		connectDB("db", dbConf.(map[interface{}]interface{}))
 	}
-	return res
+}
+
+func connectDB(name string, options map[interface{}]interface{}) {
+	ms := make(map[string]string)
+	for k, v := range options {
+		ms[albedo.MakeString(k)] = albedo.MakeString(v)
+	}
+	if ms["charset"] == "" {
+		ms["charset"] = "utf8"
+	}
+	db, err := gorm.Open(ms["datatype"], ms["username"]+":"+ms["password"]+"@tcp("+ms["hostname"]+")/"+ms["database"]+"?charset="+ms["charset"])
+	if err != nil {
+		panic(fmt.Sprintf("\x1b[31;20m[ERROR] %s\x1b[0m\n", err.Error()))
+	}
+	//全局禁用表复数
+	db.SingularTable(true)
+	if name == "main_db" {
+		MainDB = db
+	} else {
+		ClientDB = db
+	}
 }

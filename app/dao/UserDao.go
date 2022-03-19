@@ -12,23 +12,23 @@ type UserDao struct {
 }
 
 func (d *UserDao) Add() {
-	conf.DB.Create(&d.User)
+	conf.MainDB.Create(&d.User)
 }
 
 func (d *UserDao) Update(data map[string]interface{}) {
-	conf.DB.Table("user").Where("id  = ?", data["id"]).Updates(data)
+	conf.MainDB.Table("user").Where("id  = ?", data["id"]).Updates(data)
 }
 
 func (d *UserDao) GetOne() {
-	conf.DB.Where("id  = ?", d.User.Id).First(&d.User)
+	conf.MainDB.Where("id  = ?", d.User.Id).First(&d.User)
 }
 
 func (d *UserDao) Delete() {
-	conf.DB.Table("user").Delete(&d.User)
+	conf.MainDB.Table("user").Delete(&d.User)
 }
 
 func (d *UserDao) GetAll(data map[string]interface{}) {
-	db := conf.DB.Model(model.User{})
+	db := conf.MainDB.Model(model.User{})
 	query := kokomi.NewQuery(&db, data)
 	query.Like("name") //如果传参data["name"]，则进行like匹配查询
 	query.List(&d.UserList.List).Pages(&d.UserList.Pages)

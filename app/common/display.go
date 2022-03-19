@@ -34,18 +34,17 @@ func Json(c *gin.Context) *jsonApi {
 }
 
 func (j *jsonApi) Output(mix interface{}) {
-	message := new(conf.Message)
 	j.Body.Status = StatusOK
 	if val, ok := mix.(int); ok {
 		j.Body.Status = val
-		j.Body.Msg = message.GetMessage(j.Body.Status)
+		j.Body.Msg = conf.Message(j.Body.Status)
 		j.Body.Body = nil
 	} else if val, ok := mix.(string); ok {
 		j.Body.Status = 11000
 		j.Body.Msg = val
 		j.Body.Body = nil
 	} else {
-		j.Body.Msg = message.GetMessage(j.Body.Status)
+		j.Body.Msg = conf.Message(j.Body.Status)
 		j.Body.Body = mix
 	}
 	j.Context.JSON(http.StatusOK, j.Body)
@@ -141,12 +140,6 @@ func (d *Display) CheckAction(value string) bool {
 		return true
 	}
 	return false
-}
-
-func (d *Display) Finish() {
-	if d.status != StatusOK {
-		d.Show(StatusWarn)
-	}
 }
 
 func (d *Display) Run() {

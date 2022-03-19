@@ -2,7 +2,7 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
-	common "stage/app/common"
+	"stage/app/common"
 	"stage/app/service"
 )
 

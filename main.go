@@ -8,9 +8,8 @@ import (
 
 func main() {
 	gin.SetMode(gin.DebugMode)
-	new(conf.Database).GetConnect()
-	defer conf.DB.Close()
 	engine := gin.New()
+	conf.ConnectDB()
 	route.Run(engine)
 	engine.Run(":8080")
 }
