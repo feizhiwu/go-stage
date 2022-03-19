@@ -7,7 +7,6 @@ import (
 )
 
 func main() {
-	gin.SetMode(gin.DebugMode)
 	engine := gin.New()
 	conf.ConnectDB()
 	route.Run(engine)

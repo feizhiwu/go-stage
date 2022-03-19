@@ -3,7 +3,6 @@ package middleware
 import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
-	"stage/app/common"
 )
 
 func Init(c *gin.Context) {
@@ -27,13 +26,4 @@ func Init(c *gin.Context) {
 		params["login_uid"] = 1
 	}
 	c.Set("params", params)
-}
-
-func Recovery(c *gin.Context) {
-	defer func() {
-		if err := recover(); err != nil {
-			common.NewDisplay(c).Show(err)
-		}
-	}()
-	c.Next()
 }

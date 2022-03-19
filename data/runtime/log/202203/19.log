@@ -1,0 +1,4 @@
+2022/03/19 18:58:59 ::1[MAIN_DB][OK] SELECT * FROM `user`   ORDER BY id desc LIMIT 20 OFFSET 0 [] in 2.251091ms
+2022/03/19 18:58:59 ::1[MAIN_DB][OK] SELECT count(*) FROM `user`   [] in 3.080071ms
+2022/03/19 18:58:59 ::1[OK] GET /v1/user?page=1 action:list map[page:1] in 11.896956ms
+2022/03/19 18:58:59 ----------------------------------------------------------------------

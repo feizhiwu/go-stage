@@ -9,6 +9,7 @@ import (
 const (
 	StatusInit = 0
 	StatusOK   = 10000
+	StatusFail = 11000
 	StatusWarn = 80006
 )
 
@@ -40,12 +41,15 @@ func (j *jsonApi) Output(mix interface{}) {
 		j.Body.Msg = conf.Message(j.Body.Status)
 		j.Body.Body = nil
 	} else if val, ok := mix.(string); ok {
-		j.Body.Status = 11000
+		j.Body.Status = StatusFail
 		j.Body.Msg = val
 		j.Body.Body = nil
 	} else {
 		j.Body.Msg = conf.Message(j.Body.Status)
 		j.Body.Body = mix
+	}
+	if j.Body.Msg == "" {
+		j.Body.Msg = conf.Message(StatusFail)
 	}
 	j.Context.JSON(http.StatusOK, j.Body)
 	j.Context.Abort()
@@ -114,13 +118,6 @@ func (d *Display) Validate(val map[int]string, data map[string]interface{}) {
 func (d *Display) HasKey(data map[string]interface{}) {
 	if data["id"] == nil {
 		panic(80001)
-	}
-}
-
-// IsLogin 检测是否登录
-func (d *Display) IsLogin(data map[string]interface{}) {
-	if data["login_uid"] == nil {
-		panic(80003)
 	}
 }
 

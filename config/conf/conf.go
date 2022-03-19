@@ -14,8 +14,8 @@ import (
 )
 
 var (
-	MainDB   *gorm.DB
-	ClientDB *gorm.DB
+	DBC map[string]*gorm.DB
+	DBS []string
 )
 
 func Config(key string) interface{} {
@@ -49,11 +49,11 @@ func Message(status int) string {
 	filePath = path.Join(dir, "/config/message.yml")
 	fileData, _ := ioutil.ReadFile(filePath)
 	yaml.Unmarshal(fileData, &msg)
-
 	return msg[status]
 }
 
 func ConnectDB() {
+	DBC = make(map[string]*gorm.DB)
 	dbConf := Config("db")
 	if len(dbConf.(map[interface{}]interface{})) > 1 {
 		for k, v := range dbConf.(map[interface{}]interface{}) {
@@ -78,9 +78,6 @@ func connectDB(name string, options map[interface{}]interface{}) {
 	}
 	//全局禁用表复数
 	db.SingularTable(true)
-	if name == "main_db" {
-		MainDB = db
-	} else {
-		ClientDB = db
-	}
+	DBS = append(DBS, name)
+	DBC[name] = db
 }

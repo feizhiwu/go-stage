@@ -15,7 +15,7 @@ type UserController struct {
 func User(c *gin.Context) {
 	s := &UserController{
 		common.NewDisplay(c),
-		new(service.UserService),
+		service.User(c.Request.Context()),
 	}
 	s.Get(s.list)
 	s.Get(s.info)
