@@ -2,6 +2,8 @@ package middleware
 
 import (
 	"context"
+	"fmt"
+	"github.com/feizhiwu/gs/albedo"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"log"
@@ -16,22 +18,24 @@ import (
 //*************************DB log start*************************
 
 type dbLog struct {
+	c    *gin.Context
 	name string
-	ip   string
 	db   *gorm.DB
 }
 
-func newDBLog(name, ip string, db *gorm.DB) {
+func newDBLog(c *gin.Context, name string, db *gorm.DB) {
 	db.LogMode(true)
 	db.SetLogger(&dbLog{
+		c,
 		name,
-		ip,
 		db,
 	})
 }
 
 func (l *dbLog) Print(values ...interface{}) {
+	var dbLog string
 	level := values[0]
+	ctx := l.c.Request.Context()
 	if level == "sql" {
 		var (
 			//source    = values[1]
@@ -44,14 +48,15 @@ func (l *dbLog) Print(values ...interface{}) {
 		} else {
 			level = "OK"
 		}
-		for _, v := range writer() {
-			log.New(v, "", log.LstdFlags).Printf("%s[%s][%s] %s %s in %s", l.ip, l.name, level, sql, param, queryTime)
-		}
+		dbLog = fmt.Sprintf("[%s][%s] %s %s in %s", l.name, level, sql, param, queryTime)
 	} else {
-		for _, v := range writer() {
-			log.New(v, "", log.LstdFlags).Printf("%s[%s]%s", l.ip, l.name, values)
-		}
+		dbLog = fmt.Sprintf("[%s]%s", l.name, values)
 	}
+	if ctx.Value("dbLog") != nil {
+		dbLog = albedo.MakeString(ctx.Value("dbLog")) + "\n" + dbLog
+	}
+	ctx = context.WithValue(l.c.Request.Context(), "dbLog", dbLog)
+	l.c.Request = l.c.Request.WithContext(ctx)
 }
 
 //*************************DB log end*************************
@@ -63,7 +68,7 @@ func beginDB(c *gin.Context) {
 		db = v.Begin()
 		ctx = context.WithValue(c.Request.Context(), k, db)
 		c.Request = c.Request.WithContext(ctx)
-		newDBLog(strings.ToUpper(k), c.ClientIP(), db)
+		newDBLog(c, strings.ToUpper(k), db)
 	}
 }
 
@@ -76,6 +81,7 @@ func commitDB(c *gin.Context) {
 
 // Logger 日志middleware
 func Logger(c *gin.Context) {
+	var logger string
 	t := time.Now()
 	beginDB(c)
 	c.Next()
@@ -84,10 +90,14 @@ func Logger(c *gin.Context) {
 	if time.Since(t) > time.Second*1 {
 		level = "SLOW"
 	}
+	logger = fmt.Sprintf("%s[%s] %s %s action:%s %v in %v", c.ClientIP(), level, c.Request.Method,
+		c.Request.RequestURI, c.GetHeader("action"), common.GetParams(c), time.Since(t))
+	if c.Request.Context().Value("dbLog") != nil {
+		logger += "\n" + albedo.MakeString(c.Request.Context().Value("dbLog"))
+	}
+	logger += "\n----------------------------------------------------------------------"
 	for _, v := range writer() {
-		log.New(v, "", log.LstdFlags).Printf("%s[%s] %s %s action:%s %v in %v\n", c.ClientIP(), level, c.Request.Method,
-			c.Request.RequestURI, c.GetHeader("action"), common.GetParams(c), time.Since(t))
-		log.New(v, "", log.LstdFlags).Printf("%s", "----------------------------------------------------------------------")
+		log.New(v, "", log.LstdFlags).Printf("%s", logger)
 	}
 }
 
