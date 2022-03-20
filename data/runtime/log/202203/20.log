@@ -1,8 +1,27 @@
-2022/03/20 13:17:20 ::1[OK] GET /v1/user?page=1 action:list map[page:1] in 11.062493ms
-[MAIN_DB][OK] SELECT * FROM `user`   ORDER BY id desc LIMIT 20 OFFSET 0 [] in 1.961425ms
-[MAIN_DB][OK] SELECT count(*) FROM `user`   [] in 2.475831ms
+2022/03/20 20:27:34 ::1[OK] GET /v1/user?page=1 action:list map[page:1] in 13.171104ms
+[MAIN_DB][OK] SELECT * FROM `user`   ORDER BY id desc LIMIT 20 OFFSET 0 [] in 2.320853ms
+[MAIN_DB][OK] SELECT count(*) FROM `user`   [] in 3.537474ms
 ----------------------------------------------------------------------
-2022/03/20 13:17:21 ::1[OK] GET /v1/user?page=1 action:list map[page:1] in 13.212753ms
-[MAIN_DB][OK] SELECT * FROM `user`   ORDER BY id desc LIMIT 20 OFFSET 0 [] in 1.798905ms
-[MAIN_DB][OK] SELECT count(*) FROM `user`   [] in 3.78111ms
+2022/03/20 20:27:36 ::1[OK] GET /v1/user?page=1 action:list map[page:1] in 13.964441ms
+[MAIN_DB][OK] SELECT * FROM `user`   ORDER BY id desc LIMIT 20 OFFSET 0 [] in 2.511854ms
+[MAIN_DB][OK] SELECT count(*) FROM `user`   [] in 4.831307ms
+----------------------------------------------------------------------
+2022/03/20 20:27:37 %!s(int=11111)
+Traceback:
+	/usr/local/opt/go/libexec/src/runtime/panic.go:1038
+	/Users/wangdongwu/www/golang/stage/app/dao/UserDao.go:25
+	/Users/wangdongwu/www/golang/stage/app/controller/UserController.go:60
+	/Users/wangdongwu/www/golang/stage/app/common/display.go:161
+	/Users/wangdongwu/www/golang/stage/app/controller/UserController.go:27
+	/Users/wangdongwu/www/go/pkg/mod/github.com/gin-gonic/gin@v1.7.7/context.go:169
+	/Users/wangdongwu/www/go/pkg/mod/github.com/gin-gonic/gin@v1.7.7/context.go:166
+	/Users/wangdongwu/www/go/pkg/mod/github.com/gin-gonic/gin@v1.7.7/context.go:169
+	/Users/wangdongwu/www/go/pkg/mod/github.com/gin-gonic/gin@v1.7.7/context.go:166
+	/Users/wangdongwu/www/go/pkg/mod/github.com/gin-gonic/gin@v1.7.7/context.go:169
+	/Users/wangdongwu/www/go/pkg/mod/github.com/gin-gonic/gin@v1.7.7/context.go:166
+	/Users/wangdongwu/www/go/pkg/mod/github.com/gin-gonic/gin@v1.7.7/gin.go:513
+	/usr/local/opt/go/libexec/src/net/http/server.go:2880
+	/usr/local/opt/go/libexec/src/net/http/server.go:1931
+	/usr/local/opt/go/libexec/src/runtime/asm_amd64.s:1582
+[MAIN_DB][OK] UPDATE `user` SET `id` = ?, `name` = ?  WHERE (id  = ?) [%!s(float64=12) lkasd %!s(float64=12)] in 5.418851ms
 ----------------------------------------------------------------------

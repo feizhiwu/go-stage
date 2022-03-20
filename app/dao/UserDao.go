@@ -7,38 +7,43 @@ import (
 	"stage/app/model"
 )
 
-type UserDao struct {
+type Base struct {
 	ctx      context.Context
-	DB       *gorm.DB
+	mainDB   *gorm.DB
+	clientDB *gorm.DB
+}
+
+type UserDao struct {
+	Base
 	User     model.User
 	UserList model.UserList
 }
 
 func User(ctx context.Context) *UserDao {
-	return &UserDao{
-		ctx: ctx,
-		DB:  ctx.Value("main_db").(*gorm.DB),
-	}
+	ud := new(UserDao)
+	ud.ctx = ctx
+	ud.mainDB = ctx.Value("main_db").(*gorm.DB)
+	return ud
 }
 
 func (d *UserDao) Add() {
-	d.DB.Create(&d.User)
+	d.mainDB.Create(&d.User)
 }
 
 func (d *UserDao) Update(data map[string]interface{}) {
-	d.DB.Table("user").Where("id  = ?", data["id"]).Updates(data)
+	d.mainDB.Table("user").Where("id  = ?", data["id"]).Updates(data)
 }
 
 func (d *UserDao) GetOne() {
-	d.DB.Where("id  = ?", d.User.Id).First(&d.User)
+	d.mainDB.Where("id  = ?", d.User.Id).First(&d.User)
 }
 
 func (d *UserDao) Delete() {
-	d.DB.Table("user").Delete(&d.User)
+	d.mainDB.Table("user").Delete(&d.User)
 }
 
 func (d *UserDao) GetAll(data map[string]interface{}) {
-	db := d.DB.Model(model.User{})
+	db := d.mainDB.Model(model.User{})
 	query := kokomi.NewQuery(&db, data)
 	query.Like("name") //如果传参data["name"]，则进行like匹配查询
 	query.List(&d.UserList.List).Pages(&d.UserList.Pages)

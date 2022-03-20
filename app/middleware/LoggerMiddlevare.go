@@ -60,8 +60,7 @@ func (l *dbLog) Print(values ...interface{}) {
 }
 
 //*************************DB log end*************************
-
-func beginDB(c *gin.Context) {
+func begin(c *gin.Context) {
 	var db *gorm.DB
 	var ctx context.Context
 	for k, v := range conf.DBC {
@@ -72,25 +71,31 @@ func beginDB(c *gin.Context) {
 	}
 }
 
-func commitDB(c *gin.Context) {
+func commit(c *gin.Context) {
 	ctx := c.Request.Context()
 	for _, v := range conf.DBS {
 		ctx.Value(v).(*gorm.DB).Commit()
 	}
 }
 
+func rollback(c *gin.Context) {
+	ctx := c.Request.Context()
+	for _, v := range conf.DBS {
+		ctx.Value(v).(*gorm.DB).Rollback()
+	}
+}
+
 // Logger 日志middleware
 func Logger(c *gin.Context) {
-	var logger string
 	t := time.Now()
-	beginDB(c)
+	begin(c)
 	c.Next()
-	commitDB(c)
+	commit(c)
 	level := "OK"
 	if time.Since(t) > time.Second*1 {
 		level = "SLOW"
 	}
-	logger = fmt.Sprintf("%s[%s] %s %s action:%s %v in %v", c.ClientIP(), level, c.Request.Method,
+	logger := fmt.Sprintf("%s[%s] %s %s action:%s %v in %v", c.ClientIP(), level, c.Request.Method,
 		c.Request.RequestURI, c.GetHeader("action"), common.GetParams(c), time.Since(t))
 	if c.Request.Context().Value("dbLog") != nil {
 		logger += "\n" + albedo.MakeString(c.Request.Context().Value("dbLog"))

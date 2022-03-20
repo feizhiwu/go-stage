@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"fmt"
+	"github.com/feizhiwu/gs/albedo"
 	"github.com/gin-gonic/gin"
 	"log"
 	"runtime"
@@ -12,11 +13,17 @@ import (
 func Recovery(c *gin.Context) {
 	defer func() {
 		if err := recover(); err != nil {
+			rollback(c)
 			message := fmt.Sprintf("%s", err)
-			for _, v := range writer() {
-				log.New(v, "", log.LstdFlags).Printf("%s\n\n", trace(message))
-				log.New(v, "", log.LstdFlags).Printf("%s", "----------------------------------------------------------------------")
+			logger := fmt.Sprintf("%s", trace(message))
+			if c.Request.Context().Value("dbLog") != nil {
+				logger += "\n" + albedo.MakeString(c.Request.Context().Value("dbLog"))
 			}
+			logger += "\n----------------------------------------------------------------------"
+			for _, v := range writer() {
+				log.New(v, "", log.LstdFlags).Printf("%s", logger)
+			}
+
 			common.NewDisplay(c).Show(err)
 		}
 	}()
