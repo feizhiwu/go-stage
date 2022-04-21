@@ -44,7 +44,7 @@ func (d *UserDao) Delete() {
 
 func (d *UserDao) GetAll(data map[string]interface{}) {
 	db := d.mainDB.Model(model.User{})
-	query := kokomi.NewQuery(&db, data)
+	query := kokomi.Active(&db, data)
 	query.Like("name") //如果传参data["name"]，则进行like匹配查询
 	query.List(&d.UserList.List).Pages(&d.UserList.Pages)
 }
