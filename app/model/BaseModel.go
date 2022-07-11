@@ -2,6 +2,6 @@ package model
 
 type Pages struct {
 	Count uint `json:"count"`
-	Limit uint `json:"limit"`
+	Size  uint `json:"size"`
 	Page  uint `json:"page"`
 }

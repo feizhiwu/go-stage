@@ -1,0 +1,93 @@
+2022/07/11 18:45:39 %!s(int=80003)
+Traceback:
+	/usr/local/opt/go/libexec/src/runtime/panic.go:1038
+	/Users/wangdongwu/www/go/src/study/stage/app/middleware/RequestMiddleware.go:17
+	/Users/wangdongwu/www/go/pkg/mod/github.com/gin-gonic/gin@v1.7.7/context.go:169
+	/Users/wangdongwu/www/go/pkg/mod/github.com/gin-gonic/gin@v1.7.7/context.go:166
+	/Users/wangdongwu/www/go/pkg/mod/github.com/gin-gonic/gin@v1.7.7/context.go:169
+	/Users/wangdongwu/www/go/pkg/mod/github.com/gin-gonic/gin@v1.7.7/context.go:166
+	/Users/wangdongwu/www/go/pkg/mod/github.com/gin-gonic/gin@v1.7.7/context.go:169
+	/Users/wangdongwu/www/go/pkg/mod/github.com/gin-gonic/gin@v1.7.7/context.go:166
+	/Users/wangdongwu/www/go/pkg/mod/github.com/gin-gonic/gin@v1.7.7/gin.go:513
+	/usr/local/opt/go/libexec/src/net/http/server.go:2880
+	/usr/local/opt/go/libexec/src/net/http/server.go:1931
+	/usr/local/opt/go/libexec/src/runtime/asm_amd64.s:1582
+----------------------------------------------------------------------
+2022/07/11 18:45:44 ::1[OK] GET /v1/user action: map[login_uid:1] in 4.643957ms
+----------------------------------------------------------------------
+2022/07/11 18:46:42 ::1[OK] GET /v1/user action: map[login_uid:1] in 8.665558ms
+----------------------------------------------------------------------
+2022/07/11 18:47:22 ::1[OK] GET /v1/user action: map[login_uid:1] in 10.702835ms
+----------------------------------------------------------------------
+2022/07/11 18:47:54 ::1[OK] GET /v1/user action: map[login_uid:1] in 6.849133ms
+----------------------------------------------------------------------
+2022/07/11 18:48:20 %!s(int=80007)
+Traceback:
+	/usr/local/opt/go/libexec/src/runtime/panic.go:1038
+	/Users/wangdongwu/www/go/src/study/stage/app/common/display.go:109
+	/Users/wangdongwu/www/go/src/study/stage/app/controller/UserController.go:47
+	/Users/wangdongwu/www/go/src/study/stage/app/common/display.go:144
+	/Users/wangdongwu/www/go/src/study/stage/app/controller/UserController.go:27
+	/Users/wangdongwu/www/go/pkg/mod/github.com/gin-gonic/gin@v1.7.7/context.go:169
+	/Users/wangdongwu/www/go/pkg/mod/github.com/gin-gonic/gin@v1.7.7/context.go:166
+	/Users/wangdongwu/www/go/pkg/mod/github.com/gin-gonic/gin@v1.7.7/context.go:169
+	/Users/wangdongwu/www/go/pkg/mod/github.com/gin-gonic/gin@v1.7.7/context.go:166
+	/Users/wangdongwu/www/go/pkg/mod/github.com/gin-gonic/gin@v1.7.7/context.go:169
+	/Users/wangdongwu/www/go/pkg/mod/github.com/gin-gonic/gin@v1.7.7/context.go:166
+	/Users/wangdongwu/www/go/pkg/mod/github.com/gin-gonic/gin@v1.7.7/gin.go:513
+	/usr/local/opt/go/libexec/src/net/http/server.go:2880
+	/usr/local/opt/go/libexec/src/net/http/server.go:1931
+	/usr/local/opt/go/libexec/src/runtime/asm_amd64.s:1582
+----------------------------------------------------------------------
+2022/07/11 18:48:30 reflect: call of reflect.Value.Set on zero Value
+Traceback:
+	/usr/local/opt/go/libexec/src/runtime/panic.go:1038
+	/usr/local/opt/go/libexec/src/reflect/value.go:255
+	/usr/local/opt/go/libexec/src/reflect/value.go:1918
+	/usr/local/opt/go/libexec/src/reflect/value.go:1912
+	/Users/wangdongwu/www/go/pkg/mod/github.com/feizhiwu/gs@v1.7.8/kokomi/kokomi.go:190
+	/Users/wangdongwu/www/go/src/study/stage/app/dao/UserDao.go:50
+	/Users/wangdongwu/www/go/src/study/stage/app/service/UserService.go:51
+	/Users/wangdongwu/www/go/src/study/stage/app/controller/UserController.go:48
+	/Users/wangdongwu/www/go/src/study/stage/app/common/display.go:144
+	/Users/wangdongwu/www/go/src/study/stage/app/controller/UserController.go:27
+	/Users/wangdongwu/www/go/pkg/mod/github.com/gin-gonic/gin@v1.7.7/context.go:169
+	/Users/wangdongwu/www/go/pkg/mod/github.com/gin-gonic/gin@v1.7.7/context.go:166
+	/Users/wangdongwu/www/go/pkg/mod/github.com/gin-gonic/gin@v1.7.7/context.go:169
+	/Users/wangdongwu/www/go/pkg/mod/github.com/gin-gonic/gin@v1.7.7/context.go:166
+	/Users/wangdongwu/www/go/pkg/mod/github.com/gin-gonic/gin@v1.7.7/context.go:169
+	/Users/wangdongwu/www/go/pkg/mod/github.com/gin-gonic/gin@v1.7.7/context.go:166
+	/Users/wangdongwu/www/go/pkg/mod/github.com/gin-gonic/gin@v1.7.7/gin.go:513
+	/usr/local/opt/go/libexec/src/net/http/server.go:2880
+	/usr/local/opt/go/libexec/src/net/http/server.go:1931
+	/usr/local/opt/go/libexec/src/runtime/asm_amd64.s:1582
+[MAIN_DB][OK] SELECT * FROM `user`   ORDER BY id desc LIMIT 20 OFFSET 0 [] in 124.546072ms
+----------------------------------------------------------------------
+2022/07/11 18:49:19 reflect: call of reflect.Value.Set on zero Value
+Traceback:
+	/usr/local/opt/go/libexec/src/runtime/panic.go:1038
+	/usr/local/opt/go/libexec/src/reflect/value.go:255
+	/usr/local/opt/go/libexec/src/reflect/value.go:1918
+	/usr/local/opt/go/libexec/src/reflect/value.go:1912
+	/Users/wangdongwu/www/go/pkg/mod/github.com/feizhiwu/gs@v1.7.9/kokomi/kokomi.go:190
+	/Users/wangdongwu/www/go/src/study/stage/app/dao/UserDao.go:50
+	/Users/wangdongwu/www/go/src/study/stage/app/service/UserService.go:51
+	/Users/wangdongwu/www/go/src/study/stage/app/controller/UserController.go:48
+	/Users/wangdongwu/www/go/src/study/stage/app/common/display.go:142
+	/Users/wangdongwu/www/go/src/study/stage/app/controller/UserController.go:27
+	/Users/wangdongwu/www/go/pkg/mod/github.com/gin-gonic/gin@v1.7.7/context.go:169
+	/Users/wangdongwu/www/go/pkg/mod/github.com/gin-gonic/gin@v1.7.7/context.go:166
+	/Users/wangdongwu/www/go/pkg/mod/github.com/gin-gonic/gin@v1.7.7/context.go:169
+	/Users/wangdongwu/www/go/pkg/mod/github.com/gin-gonic/gin@v1.7.7/context.go:166
+	/Users/wangdongwu/www/go/pkg/mod/github.com/gin-gonic/gin@v1.7.7/context.go:169
+	/Users/wangdongwu/www/go/pkg/mod/github.com/gin-gonic/gin@v1.7.7/context.go:166
+	/Users/wangdongwu/www/go/pkg/mod/github.com/gin-gonic/gin@v1.7.7/gin.go:513
+	/usr/local/opt/go/libexec/src/net/http/server.go:2880
+	/usr/local/opt/go/libexec/src/net/http/server.go:1931
+	/usr/local/opt/go/libexec/src/runtime/asm_amd64.s:1582
+[MAIN_DB][OK] SELECT * FROM `user`   ORDER BY id desc LIMIT 20 OFFSET 0 [] in 6.695938ms
+----------------------------------------------------------------------
+2022/07/11 18:50:13 ::1[OK] GET /v1/user?page=1 action:list map[login_uid:1 page:1] in 34.701663ms
+[MAIN_DB][OK] SELECT * FROM `user`   ORDER BY id desc LIMIT 20 OFFSET 0 [] in 1.511374ms
+[MAIN_DB][OK] SELECT count(*) FROM `user`   [] in 25.045374ms
+----------------------------------------------------------------------

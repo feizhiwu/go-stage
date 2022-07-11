@@ -11,17 +11,47 @@ import (
 	"os"
 	"path"
 	"strings"
+	"time"
 )
 
 var (
-	DBC map[string]*gorm.DB
-	DBS []string
+	DBC  map[string]*gorm.DB
+	DBS  []string
+	File *file
 )
+
+type file struct {
+	date    string
+	pack    string
+	Config  string
+	Message string
+	LogDir  string
+	Logger  string
+}
+
+func GetFile() *file {
+	if File == nil || File.date != time.Now().Format("02") {
+		File = new(file)
+		File.date = time.Now().Format("02")
+		if gin.Mode() == gin.DebugMode {
+			dir, _ := os.Getwd()
+			File.Config = path.Join(dir, "config/config.yml")
+			File.Message = path.Join(dir, "config/message.yml")
+			File.LogDir = path.Join(dir, "data/runtime/log/"+time.Now().Format("200601"))
+		} else {
+			File.pack = "/stage"
+			File.Config = path.Join(os.Getenv("GOPATH"), "src", File.pack, "config/config.yml")
+			File.Message = path.Join(os.Getenv("GOPATH"), "src", File.pack, "config/message.yml")
+			File.LogDir = path.Join(os.Getenv("GOBIN"), "data", File.pack, "runtime/log/"+time.Now().Format("200601"))
+		}
+		File.Logger = path.Join(File.LogDir, File.date+"-"+gin.Mode()+".log")
+	}
+	return File
+}
 
 // Config 获取配置信息
 func Config(key string) interface{} {
-	dir, _ := os.Getwd()
-	filePath := path.Join(dir, "/config/config.yml")
+	filePath := GetFile().Config
 	fileData, _ := ioutil.ReadFile(filePath)
 	var config map[interface{}]interface{}
 	yaml.Unmarshal(fileData, &config)
@@ -47,8 +77,7 @@ func Config(key string) interface{} {
 func Message(status int) string {
 	var msg map[int]string
 	var filePath string
-	dir, _ := os.Getwd()
-	filePath = path.Join(dir, "/config/message.yml")
+	filePath = GetFile().Message
 	fileData, _ := ioutil.ReadFile(filePath)
 	yaml.Unmarshal(fileData, &msg)
 	return msg[status]
@@ -58,12 +87,13 @@ func Message(status int) string {
 func ConnectDB() {
 	DBC = make(map[string]*gorm.DB)
 	dbConf := Config("db")
-	if len(dbConf.(map[interface{}]interface{})) > 1 {
-		for k, v := range dbConf.(map[interface{}]interface{}) {
+	for k, v := range dbConf.(map[interface{}]interface{}) {
+		if _, ok := v.(map[interface{}]interface{}); !ok {
+			connectDB("db", dbConf.(map[interface{}]interface{}))
+			break
+		} else {
 			connectDB(albedo.MakeString(k), v.(map[interface{}]interface{}))
 		}
-	} else {
-		connectDB("db", dbConf.(map[interface{}]interface{}))
 	}
 }
 

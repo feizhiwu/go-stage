@@ -70,10 +70,6 @@ type Display struct {
 	Params map[string]interface{}
 	status int
 	funcs  map[string]func()
-	checks struct {
-		verify  bool
-		actions []string
-	}
 }
 
 func (d *Display) Get(f func()) {
@@ -143,23 +139,7 @@ func (d *Display) Run() {
 	action := d.GetHeader("action")
 	f := d.funcs[d.Request.Method+"-"+action]
 	if f != nil {
-		if len(d.checks.actions) > 0 {
-			if d.checks.verify && InArray(len(d.checks.actions), func(i int) bool {
-				return d.checks.actions[i] == action
-			}) {
-				d.ForceLogin()
-				f()
-			} else if !d.checks.verify && !InArray(len(d.checks.actions), func(i int) bool {
-				return d.checks.actions[i] == action
-			}) {
-				d.ForceLogin()
-				f()
-			} else {
-				f()
-			}
-		} else {
-			f()
-		}
+		f()
 	} else {
 		d.Show(StatusWarn)
 	}

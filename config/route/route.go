@@ -13,7 +13,7 @@ type route struct {
 // Run 路由路口
 func Run(engine *gin.Engine) {
 	r := route{engine}
-	r.Engine.Use(middleware.Init, middleware.Recovery, middleware.Logger)
+	r.Engine.Use(middleware.Recovery, middleware.Logger, middleware.Request)
 	r.Engine.Any("", controller.Index)
 	r.v1()
 }

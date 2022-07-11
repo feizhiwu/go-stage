@@ -8,7 +8,6 @@ import (
 	"github.com/jinzhu/gorm"
 	"log"
 	"os"
-	"path"
 	"stage/app/common"
 	"stage/config/conf"
 	"strings"
@@ -107,19 +106,13 @@ func Logger(c *gin.Context) {
 }
 
 func writer() (writer []*os.File) {
-	dir, _ := os.Getwd()
-	logPath := path.Join(dir, "/data/runtime/log/"+time.Now().Format("200601"))
+	file := conf.GetFile()
+	logPath := file.LogDir
 	//创建文件路径
 	if _, err := os.Stat(logPath); os.IsNotExist(err) {
 		os.MkdirAll(logPath, os.ModePerm)
 	}
-	var logFix string
-	if gin.Mode() == gin.TestMode {
-		logFix = "-test.log"
-	} else {
-		logFix = ".log"
-	}
-	filePath := logPath + "/" + time.Now().Format("02") + logFix
+	filePath := file.Logger
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
 		os.Create(filePath)
 	}
