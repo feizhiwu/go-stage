@@ -2,13 +2,13 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"stage/config/conf"
+	"stage/app/plugin/driver"
 	"stage/config/route"
 )
 
 func main() {
 	engine := gin.New()
-	conf.ConnectDB()
+	driver.Connect()
 	route.Run(engine)
 	engine.Run(":8080")
 }

@@ -1,0 +1,16 @@
+2023/05/10 21:42:29 ::1[OK] GET /v1/user?page=1&limit=10 action:list map[limit:10 login_uid:1 page:1] in 91.615967ms
+[MASTER][OK] SELECT * FROM `user`   ORDER BY id desc LIMIT 20 OFFSET 0 [] in 67.651824ms
+[MASTER][OK] SELECT count(*) FROM `user`   [] in 23.258246ms
+----------------------------------------------------------------------
+2023/05/10 21:42:50 ::1[OK] GET /v1/user?id=1 action:info map[id:1 login_uid:1] in 15.818643ms
+[MASTER][OK] SELECT * FROM `user`  WHERE `user`.`id` = ? AND ((id  = ?)) ORDER BY `user`.`id` ASC LIMIT 1 [%!s(uint=1) %!s(uint=1)] in 15.517502ms
+----------------------------------------------------------------------
+2023/05/10 21:42:53 ::1[OK] GET /v1/user?id=12 action:info map[id:12 login_uid:1] in 4.118312ms
+[MASTER][OK] SELECT * FROM `user`  WHERE `user`.`id` = ? AND ((id  = ?)) ORDER BY `user`.`id` ASC LIMIT 1 [%!s(uint=12) %!s(uint=12)] in 3.781183ms
+----------------------------------------------------------------------
+2023/05/10 21:43:13 ::1[OK] POST /v1/user action:add map[login_uid:1 name:tout password:123] in 44.933269ms
+[MASTER][OK] INSERT INTO `user` (`name`,`password`) VALUES (?,?) [tout ca951cff7954f09ec25d0956a38299f9] in 22.859458ms
+----------------------------------------------------------------------
+2023/05/10 21:43:33 ::1[OK] GET /v1/user?id=13 action:info map[id:13 login_uid:1] in 8.50321ms
+[MASTER][OK] SELECT * FROM `user`  WHERE `user`.`id` = ? AND ((id  = ?)) ORDER BY `user`.`id` ASC LIMIT 1 [%!s(uint=13) %!s(uint=13)] in 6.900772ms
+----------------------------------------------------------------------

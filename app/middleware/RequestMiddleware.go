@@ -3,6 +3,7 @@ package middleware
 import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
+	"stage/app/plugin/scene"
 )
 
 func Request(c *gin.Context) {
@@ -27,6 +28,7 @@ func Request(c *gin.Context) {
 		params["login_uid"] = 1
 	}
 	c.Set("params", params)
+	scene.Access(c, params)
 	if !exclude(c) {
 		if params["login_uid"] == nil {
 			panic(80003)

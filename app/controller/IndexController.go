@@ -2,16 +2,16 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
-	"stage/app/common"
+	"stage/app/plugin/scene"
 )
 
 type IndexController struct {
-	*common.Display
+	*scene.Drama
 }
 
 func Index(c *gin.Context) {
 	s := &IndexController{
-		common.NewDisplay(c),
+		scene.Action(c),
 	}
 	s.Show(10000)
 }

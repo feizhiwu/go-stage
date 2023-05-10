@@ -3,19 +3,19 @@ package controller
 import (
 	"github.com/feizhiwu/gs/albedo"
 	"github.com/gin-gonic/gin"
-	"stage/app/common"
+	"stage/app/plugin/scene"
 	"stage/app/service"
 )
 
 type UserController struct {
-	*common.Display
+	*scene.Drama
 	us *service.UserService
 }
 
 // User 控制器入口
 func User(c *gin.Context) {
 	s := &UserController{
-		common.NewDisplay(c),
+		scene.Action(c),
 		service.User(c.Request.Context()),
 	}
 	s.Get(s.list)
@@ -57,11 +57,11 @@ func (s *UserController) info() {
 func (s *UserController) update() {
 	s.HasKey(s.Params)
 	s.us.Update(s.Params)
-	s.Show(common.StatusOK)
+	s.Show(scene.StatusOK)
 }
 
 func (s *UserController) delete() {
 	s.HasKey(s.Params)
 	s.us.Delete(albedo.MakeUint(s.Params["id"]))
-	s.Show(common.StatusOK)
+	s.Show(scene.StatusOK)
 }

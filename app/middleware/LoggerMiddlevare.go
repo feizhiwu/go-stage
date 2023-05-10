@@ -8,7 +8,8 @@ import (
 	"github.com/jinzhu/gorm"
 	"log"
 	"os"
-	"stage/app/common"
+	"stage/app/plugin"
+	"stage/app/plugin/driver"
 	"stage/config/conf"
 	"strings"
 	"time"
@@ -16,22 +17,34 @@ import (
 
 //*************************DB log start*************************
 
-type dbLog struct {
+type queryLog struct {
 	c    *gin.Context
 	name string
 	db   *gorm.DB
 }
 
-func newDBLog(c *gin.Context, name string, db *gorm.DB) {
+func setDriver(c *gin.Context) {
+	var db *gorm.DB
+	var ctx context.Context
+	for k, v := range driver.DBC {
+		db = v
+		ctx = context.WithValue(c.Request.Context(), k, db)
+		c.Request = c.Request.WithContext(ctx)
+		setDriverLog(c, strings.ToUpper(k), db)
+	}
+}
+
+func setDriverLog(c *gin.Context, name string, db *gorm.DB) {
 	db.LogMode(true)
-	db.SetLogger(&dbLog{
+	//sql日志
+	db.SetLogger(&queryLog{
 		c,
 		name,
 		db,
 	})
 }
 
-func (l *dbLog) Print(values ...interface{}) {
+func (l *queryLog) Print(values ...interface{}) {
 	var dbLog string
 	level := values[0]
 	ctx := l.c.Request.Context()
@@ -59,43 +72,18 @@ func (l *dbLog) Print(values ...interface{}) {
 }
 
 //*************************DB log end*************************
-func begin(c *gin.Context) {
-	var db *gorm.DB
-	var ctx context.Context
-	for k, v := range conf.DBC {
-		db = v.Begin()
-		ctx = context.WithValue(c.Request.Context(), k, db)
-		c.Request = c.Request.WithContext(ctx)
-		newDBLog(c, strings.ToUpper(k), db)
-	}
-}
 
-func commit(c *gin.Context) {
-	ctx := c.Request.Context()
-	for _, v := range conf.DBS {
-		ctx.Value(v).(*gorm.DB).Commit()
-	}
-}
-
-func rollback(c *gin.Context) {
-	ctx := c.Request.Context()
-	for _, v := range conf.DBS {
-		ctx.Value(v).(*gorm.DB).Rollback()
-	}
-}
-
-// Logger 日志middleware
+// Logger 日志中间件
 func Logger(c *gin.Context) {
 	t := time.Now()
-	begin(c)
+	setDriver(c)
 	c.Next()
-	commit(c)
 	level := "OK"
 	if time.Since(t) > time.Second*1 {
 		level = "SLOW"
 	}
 	logger := fmt.Sprintf("%s[%s] %s %s action:%s %v in %v", c.ClientIP(), level, c.Request.Method,
-		c.Request.RequestURI, c.GetHeader("action"), common.GetParams(c), time.Since(t))
+		c.Request.RequestURI, c.GetHeader("action"), plugin.GetParams(c), time.Since(t))
 	if c.Request.Context().Value("dbLog") != nil {
 		logger += "\n" + albedo.MakeString(c.Request.Context().Value("dbLog"))
 	}

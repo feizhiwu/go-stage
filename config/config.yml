@@ -1,14 +1,14 @@
 debug:
   salt: 8d83e248348db11e676907d879d4e1e1
   db:
-    main_db:
+    master:
       datatype: mysql
       hostname: localhost
       database: test
       username: root
       password: 123456
       charset: utf8
-    client_db:
+    slave:
       datatype: mysql
       hostname: localhost
       database: test

@@ -4,8 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/feizhiwu/gs/albedo"
-	"stage/app/common"
 	"stage/app/dao"
+	"stage/app/plugin"
+	"stage/app/plugin/driver"
 )
 
 type UserService struct {
@@ -20,11 +21,15 @@ func User(ctx context.Context) *UserService {
 }
 
 func (s *UserService) Add(data map[string]interface{}) {
+	//启动事务
+	s.ctx = driver.Begin(s.ctx)
 	s.UD = dao.User(s.ctx)
-	params := common.CopyParams([]string{"name", "password"}, data)
+	params := plugin.CopyParams([]string{"name", "password"}, data)
 	json.Unmarshal(albedo.MakeJson(params), &s.UD.User)
-	s.UD.User.Password = common.EncryptPass(s.UD.User.Password)
+	s.UD.User.Password = plugin.EncryptPass(s.UD.User.Password)
 	s.UD.Add()
+	//提交事务
+	driver.Commit(s.ctx)
 }
 
 func (s *UserService) GetInfo(id uint) {
@@ -35,7 +40,7 @@ func (s *UserService) GetInfo(id uint) {
 
 func (s *UserService) Update(data map[string]interface{}) {
 	s.UD = dao.User(s.ctx)
-	params := common.CopyParams([]string{"id", "name", "password"}, data)
+	params := plugin.CopyParams([]string{"id", "name", "password"}, data)
 	s.UD.Update(params)
 }
 
