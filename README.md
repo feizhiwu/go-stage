@@ -4,22 +4,18 @@ gin+gorm 面向接口（api）简易小demo，初学者也能快速上手
 
 RESTful架构，结构清晰，传参灵活
 
-学废了学废了，我要自己写框架？传送门：https://github.com/feizhiwu/fin
-
-go已经学废了？来看看java吧，传送门：https://github.com/feizhiwu/java-stage
-
 ### 项目结构
 
 ```
 |-app
-    |-common 公共方法
-        |-display.go 统一json格式输出
-        |-function.go 公共函数
     |-controller 控制器
     |-dao 负责curd的
     |-middleware 中间件
     |-model 模型
     |-plugin 常用工具类
+        |-driver 持久化工具类
+        |-scene 统一输出工具类
+        |-function.go 公共函数
     |-service 核心业务处理
 |-config 配置文件和统一路由管理
     |-conf
